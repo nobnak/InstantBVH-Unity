@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Gist;
 
 namespace Reconnitioning {
+    [ExecuteInEditMode]
     public class Recon : MonoBehaviour {
         public Color colorInsight = new Color (0.654f, 1f, 1f);
         public Color colorSpot = new Color (1f, 0.65f, 1f);
@@ -14,6 +15,7 @@ namespace Reconnitioning {
 
         GLFigure _fig;
 
+        #region Unity
         void OnEnable() {
             _database = new Dataset<Vision> ();
             _graph = new Graph ();
@@ -36,22 +38,26 @@ namespace Reconnitioning {
 
             for (var i = 0; i < count; i++) {
                 var v = _database [i];
-                var tr = v.transform;
-                _fig.DrawFan (tr.position, Quaternion.LookRotation(-tr.up, tr.forward), v.range * Vector3.one, 
-                    colorSpot, -v.angle, v.angle);
-            }
-
-            for (var i = 0; i < count; i++) {
-                var v = _database [i];
                 var posFrom = v.transform.position;
                 foreach (var j in _graph.Edges(i)) {
                     var u = _database [j];
                     var posTo = u.transform.position;
-                    Gizmos.color = colorInsight;
-                    Gizmos.DrawLine (posFrom, posTo);
+                    DrawRay (posFrom, posTo);
                 }                    
             }
         }
+        #endregion
+
+        #region Public
+        public void DrawRange (Vision v) {
+            var tr = v.transform;
+            _fig.DrawFan (tr.position, Quaternion.LookRotation (-tr.up, tr.forward), v.range * Vector3.one, colorSpot, -v.angle, v.angle);
+        }
+        public void DrawRay (Vector3 posFrom, Vector3 posTo) {
+            Gizmos.color = colorInsight;
+            Gizmos.DrawLine (posFrom, posTo);
+        }
+        #endregion
 
         #region Static
         public static Recon Instance { get; protected set; }
