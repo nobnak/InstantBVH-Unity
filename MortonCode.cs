@@ -7,15 +7,9 @@ namespace Reconnitioning {
         const int BIT_COUNT = 8;
         const int BIT_LIMIT = 1 << BIT_COUNT;
         const int BIT_MASK = BIT_LIMIT - 1;
-        static readonly System.UInt32[] MORTON_X;
-        static readonly System.UInt32[] MORTON_Y;
-        static readonly System.UInt32[] MORTON_Z;
-
-        static MortonCode() {
-            MORTON_X = X2Morton (new System.UInt32[BIT_LIMIT], 0);
-            MORTON_Y = X2Morton (new System.UInt32[BIT_LIMIT], 1);
-            MORTON_Z = X2Morton (new System.UInt32[BIT_LIMIT], 2);
-        }
+        static readonly System.UInt32[] MORTON_X = X2Morton (new System.UInt32[BIT_LIMIT], 0);
+        static readonly System.UInt32[] MORTON_Y = X2Morton (new System.UInt32[BIT_LIMIT], 1);
+        static readonly System.UInt32[] MORTON_Z = X2Morton (new System.UInt32[BIT_LIMIT], 2);
 
         public static System.UInt64 Encode(int x, int y, int z) {
             return Encode ((System.UInt32)x, (System.UInt32)y, (System.UInt32)z);
