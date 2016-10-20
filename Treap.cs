@@ -19,25 +19,6 @@ namespace Reconnitioning {
             return t;
         }
 
-        #region
-
-        #endregion
-
-        #region Insert, Erase
-        Node<Value> Insert(int i, Node<Value> k) { return Insert (ref _root, i, k); }
-        Node<Value> Insert(ref Node<Value> t, int i, Node<Value> k) {
-            var s = Split (t, i);
-            return t = Merge (s.left, Merge (k, s.right));
-        }
-        Node<Value> Erase(int i) { return Erase(ref _root, i); }
-        Node<Value> Erase(ref Node<Value> t, int i) {
-            var r = Split (t, i + 1);
-            var l = Split (r.left, i);
-            Destroy (l.right);
-            return t = Update (Merge (l.left, r.right));
-        }
-        #endregion
-
         #region Merge / Split
         Node<Value> Merge(Node<Value> l, Node<Value> r) {
             if (l == null)
