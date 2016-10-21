@@ -15,7 +15,6 @@ namespace Reconnitioning {
 
         GLFigure _fig;
 
-        #region Unity
         void OnEnable() {
             _database = new Dataset<Vision> ();
             _graph = new Graph ();
@@ -29,6 +28,8 @@ namespace Reconnitioning {
                 _fig = null;
             }
         }
+
+        #region Gizmo
         void OnDrawGizmos() {
             if (_builder == null)
                 return;
