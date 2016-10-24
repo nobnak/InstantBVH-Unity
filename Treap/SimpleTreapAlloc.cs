@@ -8,7 +8,7 @@ namespace Reconnitioning.Treap {
 
         #region ITreapAlloc implementation
         public float Priority () { return Random.value; }
-        public Treap<Value> Create (int key) {
+        public Treap<Value> Create (ulong key) {
             return new Treap<Value> (key, Priority());
         }
         public void Destroy (Treap<Value> t) {}

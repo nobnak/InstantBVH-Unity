@@ -5,7 +5,7 @@ namespace Reconnitioning.Treap {
     
     public interface ITreapAlloc<Value> {
         float Priority();
-        Treap<Value> Create(int key);
+        Treap<Value> Create(ulong key);
         void Destroy (Treap<Value> t);
     }
 }

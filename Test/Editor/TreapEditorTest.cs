@@ -22,7 +22,7 @@ namespace Reconnitioning.Treap {
             System.Array.Sort (rands, numbers);
 
             for (var i = 0; i < n; i++)
-                Treap<int>.Insert (ref root, i, alloc);
+                Treap<int>.Insert (ref root, (ulong)i, alloc);
 
             var heap = Heapup<int>(new List<int> (), root);
             for (var i = 0; i < heap.Count; i++)
@@ -30,13 +30,13 @@ namespace Reconnitioning.Treap {
 
             for (var i = 0; i < n; i++) {
                 Treap<int> t;
-                Assert.True(Treap<int>.TryGet(root, i, out t));
+                Assert.True(Treap<int>.TryGet(root, (ulong)i, out t));
                 t.Values.AddLast (i);
             }
 
             for (var i = 0; i < n; i++) {
                 Treap<int> t;
-                Treap<int>.TryGet (root, i, out t);
+                Treap<int>.TryGet (root, (ulong)i, out t);
                 Assert.AreEqual (1, t.Values.Count);
                 Assert.AreEqual (i, t.Values.Last.Value);
             }
@@ -47,7 +47,7 @@ namespace Reconnitioning.Treap {
                 return l;
 
             Heapup (l, t.ch [0]);
-            l.Add (t.key);
+            l.Add ((int)t.key);
             Heapup (l, t.ch [1]);
 
             return l;

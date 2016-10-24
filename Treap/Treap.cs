@@ -4,17 +4,17 @@ using System.Collections.Generic;
 namespace Reconnitioning.Treap {
     
     public class Treap<Value> {
-        public int key;
+        public ulong key;
         public float pri;
 
         public readonly Treap<Value>[] ch = new Treap<Value>[2];
         public readonly LinkedList<Value> Values = new LinkedList<Value>();
 
-        public Treap(int key, float pri) {
+        public Treap(ulong key, float pri) {
             Reset (key, pri);
         }
 
-        public Treap<Value> Reset(int key, float pri) {
+        public Treap<Value> Reset(ulong key, float pri) {
             this.key = key;
             this.pri = pri;
             return this;
@@ -26,7 +26,7 @@ namespace Reconnitioning.Treap {
         }
 
         #region Static
-        public static bool TryGet(Treap<Value> t, int key, out Treap<Value> n) {
+        public static bool TryGet(Treap<Value> t, ulong key, out Treap<Value> n) {
             n = t;
             if (t == null)
                 return false;
@@ -36,7 +36,7 @@ namespace Reconnitioning.Treap {
             var dir = (key < t.key ? 0 : 1);
             return TryGet(t.ch [dir], key, out n);
         }
-        public static Treap<Value> Insert(ref Treap<Value> t, int key, ITreapAlloc<Value> alloc) {
+        public static Treap<Value> Insert(ref Treap<Value> t, ulong key, ITreapAlloc<Value> alloc) {
             if (t == null)
                 return t = alloc.Create (key);
             var dir = (key < t.key ? 0 : 1);
