@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Reconnitioning {
-        
+namespace Reconnitioning.Treap {
+    
     public class Treap<Value> {
         public int key;
         public float pri;
@@ -10,14 +10,22 @@ namespace Reconnitioning {
         public readonly Treap<Value>[] ch = new Treap<Value>[2];
         public readonly LinkedList<Value> Values = new LinkedList<Value>();
 
-        ITreapAlloc _alloc;
-
-        public Treap(int key, ITreapAlloc alloc) {
-            this.key = key;
-            this.pri = alloc.Priority ();
-            this._alloc = alloc;
+        public Treap(int key, float pri) {
+            Reset (key, pri);
         }
 
+        public Treap<Value> Reset(int key, float pri) {
+            this.key = key;
+            this.pri = pri;
+            return this;
+        }
+        public Treap<Value> Clear() {
+            System.Array.Clear (ch, 0, ch.Length);
+            Values.Clear ();
+            return this;
+        }
+
+        #region Static
         public static bool TryGet(Treap<Value> t, int key, out Treap<Value> n) {
             n = t;
             if (t == null)
@@ -28,7 +36,7 @@ namespace Reconnitioning {
             var dir = (key < t.key ? 0 : 1);
             return TryGet(t.ch [dir], key, out n);
         }
-        public static Treap<Value> Insert(ref Treap<Value> t, int key, ITreapAlloc alloc) {
+        public static Treap<Value> Insert(ref Treap<Value> t, int key, ITreapAlloc<Value> alloc) {
             if (t == null)
                 return t = alloc.Create (key);
             var dir = (key < t.key ? 0 : 1);
@@ -42,24 +50,6 @@ namespace Reconnitioning {
             t.ch [1 - dir] = s.ch [dir];
             s.ch [dir] = t;
             return t = s;
-        }
-
-        #region Classes
-        public interface ITreapAlloc {
-            float Priority();
-            Treap<Value> Create(int key);
-            void Destroy (Treap<Value> t);
-        }
-        public class SimpleTreapAlloc : ITreapAlloc {
-            public SimpleTreapAlloc() {}
-
-            #region ITreapAlloc implementation
-            public float Priority () { return Random.value; }
-            public Treap<Value> Create (int key) {
-                return new Treap<Value> (key, this);
-            }
-            public void Destroy (Treap<Value> t) {}
-            #endregion
         }
         #endregion
     }
