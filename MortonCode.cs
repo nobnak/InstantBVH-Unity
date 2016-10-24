@@ -18,7 +18,14 @@ namespace Reconnitioning {
         public static System.UInt64 Encode(int x, int y, int z) {
             return Encode ((System.UInt32)x, (System.UInt32)y, (System.UInt32)z);
         }
+		public static System.UInt64 Encode(float x, float y, float z) {
+			return Encode ((System.UInt32)(x * INT_MAX), (System.UInt32)(y * INT_MAX), (System.UInt32)(z * INT_MAX));
+		}
         public static System.UInt64 Encode(System.UInt32 x, System.UInt32 y, System.UInt32 z) {
+			x = Clamp (x);
+			y = Clamp (y);
+			z = Clamp (z);
+
             System.UInt64 m = 0;
             for (var i = 2; i >= 0; i--) {
                 m = (m << (3 * STRIDE_BITS))
@@ -29,6 +36,9 @@ namespace Reconnitioning {
             return m;
         }
 
+		static System.UInt32 Clamp(System.UInt32 x) {
+			return (x < INT_MIN ? INT_MIN : (x <= INT_MAX ? x : INT_MAX));
+		}
         static System.UInt32[] X2Morton(System.UInt32[] mortons, int offset) {
             for (var i = 0; i < mortons.Length; i++)
                 mortons[i] = X2Morton (i) << offset;
