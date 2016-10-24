@@ -4,10 +4,29 @@ using Reconnitioning.Treap;
 
 namespace Reconnitioning {
     
-    public class BVH<Value> {
+	public class BVH<Value> where Value : class {
+		public readonly BVH<Value>[] ch = new BVH<Value>[2];
+
+		public Bounds bb;
+		public Value value;
+
+		public BVH() {
+		}
+		public BVH(Bounds bb, Value val) {
+			Reset (bb, val);
+		}
+
+		public BVH<Value> Reset(Bounds bb, Value val) {
+			this.bb = bb;
+			this.value = val;
+			return this;
+		}
+		public bool Leaf() {
+			return ch [0] == null && ch [1] == null;
+		}
 
         public class Builder {
-            CachedTreapController<Element<Value>> _treap = new CachedTreapController<Element<Value>>();
+            CachedTreapController<BVH<Value>> _treap = new CachedTreapController<BVH<Value>>();
 
 			public BVH<Value> Build(BVH<Value> bvh, IList<Bounds> Bous, IList<Value> Vals) {
 				var min = new Vector3 (float.MaxValue, float.MaxValue, float.MaxValue);
@@ -29,23 +48,13 @@ namespace Reconnitioning {
                     var val = Vals [i];
 					var p = Vector3.Scale(bb.center - min, sizeInv);
 					var id = MortonCode.Encode(p.x, p.y, p.z);
-                    Treap<Element<Value>> t;
+                    Treap<BVH<Value>> t;
                     if (!_treap.TryGet (id, out t))
                         t = _treap.Insert (id);
-                    t.Values.AddLast (new Element<Value> (bb, val));
+                    t.Values.AddLast (new BVH<Value> (bb, val));
 				}
 
                 return bvh;
-            }
-
-            public struct Element<Value> {
-                public Bounds bb;
-                public Value value;
-
-                public Element(Bounds bb, Value val) {
-                    this.bb = bb;
-                    this.value = val;
-                }
             }
         }
     }
