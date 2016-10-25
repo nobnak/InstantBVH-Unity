@@ -16,6 +16,11 @@ namespace Reconnitioning.Treap {
             this.pri = pri;
             return this;
         }
+        public Treap<Value> Clear() {
+            System.Array.Clear (ch, 0, ch.Length);
+            Values.Clear ();
+            return this;
+        }
 
         #region Static
         public static float Priority() {
@@ -52,7 +57,7 @@ namespace Reconnitioning.Treap {
 
             for (var i = 0; i < 2; i++)
                 Clear (t.ch [i], alloc);
-            return alloc.Free (t);
+            return alloc.Free (t.Clear());
         }
         #endregion
     }
