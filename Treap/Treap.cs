@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Gist;
 
 namespace Reconnitioning.Treap {
     
@@ -26,6 +27,9 @@ namespace Reconnitioning.Treap {
         }
 
         #region Static
+        public static float Priority() {
+            return Random.value;
+        }
         public static bool TryGet(Treap<Value> t, ulong key, out Treap<Value> n) {
             n = t;
             if (t == null)
@@ -36,9 +40,9 @@ namespace Reconnitioning.Treap {
             var dir = (key < t.key ? 0 : 1);
             return TryGet(t.ch [dir], key, out n);
         }
-        public static Treap<Value> Insert(ref Treap<Value> t, ulong key, ITreapAlloc<Value> alloc) {
+        public static Treap<Value> Insert(ref Treap<Value> t, ulong key, IMemoryPool<Treap<Value>> alloc) {
             if (t == null)
-                return t = alloc.Create (key);
+                return t = alloc.New ().Reset (key, Priority ());
             var dir = (key < t.key ? 0 : 1);
             var n = Insert (ref t.ch [dir], key, alloc);
             if (t.pri < t.ch [dir].pri)
