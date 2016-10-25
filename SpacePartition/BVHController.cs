@@ -3,6 +3,7 @@ using System.Collections;
 using Gist;
 using Reconnitioning.Treap;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Reconnitioning.SpacePartition {
 
@@ -13,6 +14,8 @@ namespace Reconnitioning.SpacePartition {
         MemoryPool<BVH<Value>> _pool = new MemoryPool<BVH<Value>> ();
         List<int> _indices = new List<int>();
         List<int> _ids = new List<int>();
+        List<Bounds> _bounds = new List<Bounds>();
+        List<Value> _values = new List<Value>();
 
         public BVHController<Value> Clear() {
             BVH<Value>.Clear (_root, _pool);
@@ -46,15 +49,33 @@ namespace Reconnitioning.SpacePartition {
             Clear ();
             _root = Sort (_indices, _ids, 0, _indices.Count, _pool, MortonCodeInt.STRIDE_BITS);
 
+            _bounds.Clear ();
+            _values.Clear ();
+            for (var i = 0; i < _indices.Count; i++) {
+                _bounds.Add (Bous [_indices [i]]);
+                _values.Add (Vals [_indices [i]]);
+            }
+            _root.Build (_bounds, _values);
+
             return this;
         }
 
         #region Static
-        public static IList<int> Swap (IList<int> indices, int i, int j) {
-            var tmp = indices [i];
-            indices [i] = indices [j];
-            indices [j] = tmp;
-            return indices;
+        public static IList<int> Swap (IList<int> list, int i, int j) {
+            var tmp = list [i];
+            list [i] = list [j];
+            list [j] = tmp;
+            return list;
+        }
+        public static BVH<Value> Compress(BVH<Value> t, IMemoryPool<BVH<Value>> alloc) {
+            for (var i = 0; i < 2; i++) {
+                if (t.ch [i] != null && t.ch [1 - i] == null) {
+                    var s = t.ch [i];
+                    alloc.Free (t);
+                    return s;
+                }
+            }
+            return t;
         }
         public static BVH<Value> Sort(IList<int> indices, IList<int> ids, int offset, int length, IMemoryPool<BVH<Value>> alloc, int height) {
             if (length <= 0 || height <= 0)
@@ -63,19 +84,19 @@ namespace Reconnitioning.SpacePartition {
             var left = offset;
             var right = offset + length;
             while (left < right) {
-                var i = indices [left];
-                var id = ids [i];
+                var id = ids[indices [left]];
                 var bit = id & (1 << (height-1));
-                if (bit > 0)
+                if (bit != 0)
                     Swap (indices, left, --right);
                 else
                     left++;
             }
 
+            var leftLen = left - offset;
             var t = alloc.New ().Reset (offset, length);
-            t.ch [0] = Sort (indices, ids, offset, left, alloc, --height);
-            t.ch [1] = Sort (indices, ids, offset + left, length - left, alloc, height);
-            return t;
+            t.ch [0] = Sort (indices, ids, offset, leftLen, alloc, --height);
+            t.ch [1] = Sort (indices, ids, left, length - leftLen, alloc, height);
+            return Compress (t, alloc);
         }
         #endregion
     }
