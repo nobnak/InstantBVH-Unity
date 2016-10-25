@@ -3,6 +3,7 @@ using UnityEditor;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
+using Gist;
 
 namespace Reconnitioning.Treap {
 
@@ -10,7 +11,7 @@ namespace Reconnitioning.Treap {
     	[Test]
         public void EditorTest() {
             Treap<int> root = null;
-            var alloc = new SimpleTreapAlloc<int> ();
+            var alloc = new MemoryPool<Treap<int>> ();
 
             var n = 4;
             var numbers = new int[n];

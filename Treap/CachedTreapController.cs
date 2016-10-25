@@ -18,7 +18,7 @@ namespace Reconnitioning.Treap {
             return Treap<Value>.Insert (ref _root, key, _pool);
         }
         public ITreapController<Value> Clear() {
-            Root.Clear ();
+            Treap<Value>.Clear (Root, _pool);
             return this;
         }
         #endregion

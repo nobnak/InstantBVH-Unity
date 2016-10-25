@@ -11,18 +11,9 @@ namespace Reconnitioning.Treap {
         public readonly Treap<Value>[] ch = new Treap<Value>[2];
         public readonly LinkedList<Value> Values = new LinkedList<Value>();
 
-        public Treap(ulong key, float pri) {
-            Reset (key, pri);
-        }
-
         public Treap<Value> Reset(ulong key, float pri) {
             this.key = key;
             this.pri = pri;
-            return this;
-        }
-        public Treap<Value> Clear() {
-            System.Array.Clear (ch, 0, ch.Length);
-            Values.Clear ();
             return this;
         }
 
@@ -54,6 +45,14 @@ namespace Reconnitioning.Treap {
             t.ch [1 - dir] = s.ch [dir];
             s.ch [dir] = t;
             return t = s;
+        }
+        public static IMemoryPool<Treap<Value>> Clear(Treap<Value> t, IMemoryPool<Treap<Value>> alloc) {
+            if (t == null)
+                return alloc;
+
+            for (var i = 0; i < 2; i++)
+                Clear (t.ch [i], alloc);
+            return alloc.Free (t);
         }
         #endregion
     }
