@@ -11,14 +11,21 @@ namespace Reconnitioning {
         public float range = 10f;
         public float angle = 90f;
 
-        #region Unity
         void OnDrawGizmos() {
             var r = Recon.Instance;
-            if (r != null)
-                DrawRange (r.Fig);
-        }
-        #endregion
+            if (r == null)
+                return;
+            
+            DrawRange (r.Fig);
 
+            var bvh = r.BVH;
+            if (bvh == null)
+                return;
+
+
+        }
+
+        #region Public
         public void DrawRange (GLFigure _fig) {
             if (_fig == null)
                 return;
@@ -30,5 +37,6 @@ namespace Reconnitioning {
             Gizmos.color = colorInsight;
             Gizmos.DrawLine (transform.position, posTo);
         }
+        #endregion
     }
 }

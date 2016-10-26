@@ -2,18 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using Gist;
+using Reconnitioning.SpacePartition;
 
 namespace Reconnitioning {
     [ExecuteInEditMode]
     public class Recon : MonoBehaviour {
 
         Dataset<IVolume> _database;
+        BVHController<IVolume> _bvh;
+        List<Bounds> _bounds;
 
         GLFigure _fig;
 
         void OnEnable() {
             _database = new Dataset<IVolume> ();
             _fig = new GLFigure ();
+            _bounds = new List<Bounds> ();
+            _bvh = new BVHController<IVolume> ();
             Instance = this;
         }
         void OnDisable() {
@@ -22,9 +27,22 @@ namespace Reconnitioning {
                 _fig = null;
             }
         }
+        void Update() {
+            RebuildBVH ();
+
+        }
 
         #region Public
         public GLFigure Fig { get { return _fig; } }
+        public BVHController<IVolume> BVH { get { return _bvh; } }
+
+        public BVHController<IVolume> RebuildBVH () {
+            _bounds.Clear ();
+            var vals = _database.GetList ();
+            for (var i = 0; i < vals.Count; i++)
+                _bounds.Add (vals [i].GetBounds ());
+            return _bvh.Build (_bounds, vals);
+        }
         #endregion
 
         #region Static

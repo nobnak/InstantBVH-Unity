@@ -40,7 +40,8 @@ namespace Reconnitioning.SpacePartition {
             }
 
             _root = Sort (_indices, _ids, 0, _indices.Count, _pool, MortonCodeInt.STRIDE_BITS);
-            _root.Build (new IndexedList<Bounds>(_indices, Bous), new IndexedList<Value>(_indices, Vals));
+            if (_root != null)
+                _root.Build (new IndexedList<Bounds> (_indices, Bous), new IndexedList<Value> (_indices, Vals));
 
             return this;
         }

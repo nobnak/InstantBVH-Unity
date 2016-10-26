@@ -99,6 +99,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 507977230}
   - 114: {fileID: 507977231}
+  - 114: {fileID: 507977232}
   m_Layer: 0
   m_Name: Animal (1)
   m_TagString: Untagged
@@ -134,6 +135,22 @@ MonoBehaviour:
   colorSpot: {r: 1, g: 0.65, b: 1, a: 1}
   range: 10
   angle: 45
+--- !u!114 &507977232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 507977229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f2f72be6ccd955419b7295863e7a581, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colorLocalBounds: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  colorWorldBounds: {r: 0, g: 1, b: 1, a: 1}
+  localBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0.5, y: 0.5, z: 0.5}
 --- !u!1 &574609419
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,10 +279,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1539232547}
-  m_LocalRotation: {x: 0.21092555, y: 0.2126579, z: 0.047070667, w: 0.9529279}
+  m_LocalRotation: {x: 0, y: 0.1902093, z: 0, w: 0.9817436}
   m_LocalPosition: {x: -3.3, y: 0, z: 6.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 22.421001, y: 27.302002, z: 10.9210005}
+  m_LocalEulerAnglesHint: {x: 0, y: 21.93, z: 0}
   m_Children: []
   m_Father: {fileID: 667652256}
   m_RootOrder: 0
@@ -299,7 +316,7 @@ MonoBehaviour:
   colorWorldBounds: {r: 0, g: 1, b: 1, a: 1}
   localBounds:
     m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 3.14, y: 0.5, z: 4.01}
+    m_Extent: {x: 1.15, y: 0.5, z: 2.07}
 --- !u!1 &1556185885
 GameObject:
   m_ObjectHideFlags: 0

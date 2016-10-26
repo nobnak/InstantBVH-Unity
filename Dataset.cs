@@ -40,5 +40,8 @@ namespace Reconnitioning {
         public T this[int index] {
             get { return _list [index]; }
         }
+        public IList<T> GetList() {
+            return _list;
+        }
     }
 }

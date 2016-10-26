@@ -9,6 +9,7 @@ namespace Reconnitioning {
     }
     #endregion
         
+    [ExecuteInEditMode]
     public class Volume : MonoBehaviour, IVolume {
         public Color colorLocalBounds = Color.gray;
         public Color colorWorldBounds = Color.cyan;
@@ -16,7 +17,6 @@ namespace Reconnitioning {
 
         void Start () {
             Recon.Add (this);
-
         }
         void OnDestroy() {
             Recon.Remove (this);
