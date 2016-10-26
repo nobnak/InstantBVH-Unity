@@ -10,6 +10,7 @@ namespace Reconnitioning {
 
     	[Test]
     	public void EditorTest() {
+            var delta = 1e-4f;
             var n = 4;
 
             var bounds = new Bounds[n];
@@ -21,6 +22,32 @@ namespace Reconnitioning {
 
             var bvh = new BVHController<Value> ();
             bvh.Build (bounds, vals);
+
+            Assert.AreEqual (0, bvh.Root.offset);
+            Assert.AreEqual (n, bvh.Root.length);
+            for (var i = 0; i < 3; i++) {
+                Assert.AreEqual (1.5f, bvh.Root.bb.center [i], delta);
+                Assert.AreEqual (2f, bvh.Root.bb.extents [i], delta);
+            }
+
+            Assert.AreEqual (0, bvh.Root.ch [0].offset);
+            Assert.AreEqual (2, bvh.Root.ch [0].length);
+
+            Assert.AreEqual (2, bvh.Root.ch [1].offset);
+            Assert.AreEqual (2, bvh.Root.ch [1].length);
+
+            for (var j = 0; j < n; j++) {
+                var s = (j & 2) != 0 ? 1 : 0;
+                var t = (j & 1) != 0 ? 1 : 0;
+
+                Assert.AreEqual (1, bvh.Root.ch [s].ch [t].Values.Count);
+                Assert.AreEqual (j, bvh.Root.ch [s].ch [t].Values.First.Value.id);
+                    
+                for (var i = 0; i < 3; i++) {
+                    Assert.AreEqual (j, bvh.Root.ch [s].ch [t].bb.center [i], delta);
+                    Assert.AreEqual (1f, bvh.Root.ch [s].ch [t].bb.size [i], delta);
+                }
+            }
     	}
 
         #region Static

@@ -19,17 +19,18 @@ namespace Reconnitioning.SpacePartition {
 
         public BVHController<Value> Clear() {
             BVH<Value>.Clear (_root, _pool);
+            _indices.Clear ();
+            _ids.Clear ();
             return this;
         }
-
         public BVHController<Value> Build(IList<Bounds> Bous, IList<Value> Vals) {
+            Clear ();
+
             var galaxy = Bous.Select (b => b.center).Encapsulate ();
             var min = galaxy.min;
             var size = galaxy.size;
             var sizeInv = new Vector3 (1f / size.x, 1f / size.y, 1f / size.z);
 
-            _indices.Clear ();
-            _ids.Clear ();
             for (var i = 0; i < Bous.Count; i++) {
                 var bb = Bous [i];
                 var p = Vector3.Scale (bb.center - min, sizeInv);
@@ -38,14 +39,28 @@ namespace Reconnitioning.SpacePartition {
                 _ids.Add (id);
             }
 
-            Clear ();
             _root = Sort (_indices, _ids, 0, _indices.Count, _pool, MortonCodeInt.STRIDE_BITS);
             _root.Build (new IndexedList<Bounds>(_indices, Bous), new IndexedList<Value>(_indices, Vals));
 
             return this;
         }
+        public IEnumerable<Value> Intersect(Bounds bb) {
+            return Intersect (_root, bb);
+        }
 
         #region Static
+        public static IEnumerable<Value> Intersect(BVH<Value> t, Bounds bb) {
+            if (t == null || !t.bb.Intersects (bb))
+                yield break;
+            
+            foreach (var i in t.ch)
+                foreach (var j in Intersect(i, bb))
+                    yield return j;
+
+            foreach (var i in t.Values)
+                yield return i;
+
+        }
         public static IList<int> Swap (IList<int> list, int i, int j) {
             var tmp = list [i];
             list [i] = list [j];
