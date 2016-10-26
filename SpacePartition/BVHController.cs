@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Gist;
+using Gist.Extensions.AABB;
 using Reconnitioning.Treap;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Reconnitioning.SpacePartition {
 
@@ -14,8 +16,6 @@ namespace Reconnitioning.SpacePartition {
         MemoryPool<BVH<Value>> _pool = new MemoryPool<BVH<Value>> ();
         List<int> _indices = new List<int>();
         List<int> _ids = new List<int>();
-        List<Bounds> _bounds = new List<Bounds>();
-        List<Value> _values = new List<Value>();
 
         public BVHController<Value> Clear() {
             BVH<Value>.Clear (_root, _pool);
@@ -23,17 +23,9 @@ namespace Reconnitioning.SpacePartition {
         }
 
         public BVHController<Value> Build(IList<Bounds> Bous, IList<Value> Vals) {
-            var min = new Vector3 (float.MaxValue, float.MaxValue, float.MaxValue);
-            var max = new Vector3 (float.MinValue, float.MinValue, float.MinValue);
-            for (var i = 0; i < Bous.Count; i++) {
-                var p = Bous [i].center;
-                for (var j = 0; j < 3; j++) {
-                    min [j] = Mathf.Min (min [j], p [j]);
-                    max [j] = Mathf.Max (max [j], p [j]);
-                }
-            }
-
-            var size = new Vector3 (max.x - min.x, max.y - min.y, max.z - min.z);
+            var galaxy = Bous.Select (b => b.center).Encapsulate ();
+            var min = galaxy.min;
+            var size = galaxy.size;
             var sizeInv = new Vector3 (1f / size.x, 1f / size.y, 1f / size.z);
 
             _indices.Clear ();
@@ -48,14 +40,7 @@ namespace Reconnitioning.SpacePartition {
 
             Clear ();
             _root = Sort (_indices, _ids, 0, _indices.Count, _pool, MortonCodeInt.STRIDE_BITS);
-
-            _bounds.Clear ();
-            _values.Clear ();
-            for (var i = 0; i < _indices.Count; i++) {
-                _bounds.Add (Bous [_indices [i]]);
-                _values.Add (Vals [_indices [i]]);
-            }
-            _root.Build (_bounds, _values);
+            _root.Build (new IndexedList<Bounds>(_indices, Bous), new IndexedList<Value>(_indices, Vals));
 
             return this;
         }
@@ -67,36 +52,27 @@ namespace Reconnitioning.SpacePartition {
             list [j] = tmp;
             return list;
         }
-        public static BVH<Value> Compress(BVH<Value> t, IMemoryPool<BVH<Value>> alloc) {
-            for (var i = 0; i < 2; i++) {
-                if (t.ch [i] != null && t.ch [1 - i] == null) {
-                    var s = t.ch [i];
-                    alloc.Free (t);
-                    return s;
-                }
-            }
-            return t;
-        }
         public static BVH<Value> Sort(IList<int> indices, IList<int> ids, int offset, int length, IMemoryPool<BVH<Value>> alloc, int height) {
             if (length <= 0 || height <= 0)
                 return null;
 
-            var left = offset;
-            var right = offset + length;
-            while (left < right) {
-                var id = ids[indices [left]];
+            var ileft = offset;
+            var iright = offset + length;
+            while (ileft < iright) {
+                var id = ids[indices [ileft]];
                 var bit = id & (1 << (height-1));
                 if (bit != 0)
-                    Swap (indices, left, --right);
+                    Swap (indices, ileft, --iright);
                 else
-                    left++;
+                    ileft++;
             }
 
-            var leftLen = left - offset;
-            var t = alloc.New ().Reset (offset, length);
-            t.ch [0] = Sort (indices, ids, offset, leftLen, alloc, --height);
-            t.ch [1] = Sort (indices, ids, left, length - leftLen, alloc, height);
-            return Compress (t, alloc);
+            var leftLen = ileft - offset;
+            var l = Sort (indices, ids, offset, leftLen, alloc, --height);
+            var r = Sort (indices, ids, ileft, length - leftLen, alloc, height);
+            if (l != null ^ r != null)
+                return (l != null ? l : r);
+            return alloc.New ().Reset (offset, length).SetChildren (l, r);
         }
         #endregion
     }

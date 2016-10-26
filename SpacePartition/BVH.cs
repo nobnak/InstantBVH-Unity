@@ -1,17 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Reconnitioning.Treap;
+using System.Linq;
 using Gist;
+using Gist.Extensions.AABB;
+using Gist.Extensions.Range;
 
 namespace Reconnitioning.SpacePartition {
     
 	public class BVH<Value> where Value : class {
-        public static readonly Bounds NULL_BOUNDS = new Bounds ();
-
-        static BVH() {
-            NULL_BOUNDS.min = new Vector3 (float.MaxValue, float.MaxValue, float.MaxValue);
-            NULL_BOUNDS.max = new Vector3 (float.MinValue, float.MinValue, float.MinValue);
-        }
 
         public readonly BVH<Value>[] ch = new BVH<Value>[2];
         public readonly LinkedList<Value> Values = new LinkedList<Value>();
@@ -24,6 +21,11 @@ namespace Reconnitioning.SpacePartition {
             this.length = length;
 			return this;
 		}
+        public BVH<Value> SetChildren(BVH<Value> l, BVH<Value> r) {
+            ch [0] = l; 
+            ch [1] = r;
+            return this;
+        }
         public BVH<Value> Clear() {
             System.Array.Clear (ch, 0, ch.Length);
             Values.Clear ();
@@ -32,19 +34,13 @@ namespace Reconnitioning.SpacePartition {
 		public bool IsLeaf() {
 			return ch [0] == null && ch [1] == null;
 		}
-        public Bounds Build(IList<Bounds> bounds, IList<Value> values) {
-            bb = bounds [offset];
-
+        public Bounds Build(IReadOnlyList<Bounds> bounds, IReadOnlyList<Value> values) {
             if (IsLeaf ()) {
-                for (var i = 0; i < length; i++) {
-                    bb.Encapsulate (bounds [offset + i]);
-                    Values.AddLast (values [offset + i]);
-                }
-            } else {
-                for (var i = 0; i < 2; i++)
-                    if (ch [i] != null)
-                        bb.Encapsulate (ch [i].Build (bounds, values));
-            }
+                bb = bounds.Range (offset, length).Encapsulate ();
+                foreach (var v in values.Range (offset, length))
+                    Values.AddLast (v);
+            } else
+                bb.Encapsulate (ch.Where (t => t != null).Select (t => t.Build (bounds, values)).Encapsulate ());
             return bb;
         }
 
