@@ -22,7 +22,19 @@ namespace Reconnitioning {
             if (bvh == null)
                 return;
 
+            var center = transform.position;
+            var fw = transform.forward;
+            var rangeSqr = range * range;
+            var angle = angle * Mathf.Deg2Rad;
+            var bb = new Bounds (center, 2f * range * Vector3.one);
+            foreach (var v in bvh.Intersect(bb)) {
+                var vbb = v.GetBounds ();
 
+                if (rangeSqr < vbb.ClosestPoint(center).sqrMagnitude)
+                    continue;
+
+
+            }
         }
 
         #region Public
