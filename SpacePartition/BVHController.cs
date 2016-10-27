@@ -91,5 +91,10 @@ namespace Reconnitioning.SpacePartition {
             return alloc.New ().Reset (offset, length).SetChildren (l, r);
         }
         #endregion
+        #region Gizmo
+        public void DrawBounds(int depthFrom, int length) {
+            BVH<Value>.DrawBounds (_root, -depthFrom, length);
+        }
+        #endregion
     }
 }

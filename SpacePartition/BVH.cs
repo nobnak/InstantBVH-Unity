@@ -54,5 +54,16 @@ namespace Reconnitioning.SpacePartition {
             return alloc.Free (t);
         }
         #endregion
+        #region Gizmo
+        public static void DrawBounds(BVH<Value> t, int depth, int length) {
+            if (t == null || depth >= length)
+                return;
+
+            Gizmos.DrawWireCube (t.bb.center, t.bb.size);
+
+            foreach (var s in t.ch.Where (s => s != null))
+                DrawBounds (s, depth + 1, length);
+        }
+        #endregion
     }
 }

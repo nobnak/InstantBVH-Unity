@@ -7,6 +7,7 @@ using Reconnitioning.SpacePartition;
 namespace Reconnitioning {
     [ExecuteInEditMode]
     public class Recon : MonoBehaviour {
+        public Color gizmoColorBounds = Color.green;
 
         Dataset<IVolume> _database;
         BVHController<IVolume> _bvh;
@@ -29,7 +30,12 @@ namespace Reconnitioning {
         }
         void Update() {
             RebuildBVH ();
-
+        }
+        void OnDrawGizmos() {
+            if (_bvh == null)
+                return;
+            Gizmos.color = gizmoColorBounds;
+            _bvh.DrawBounds (0, 10);
         }
 
         #region Public
