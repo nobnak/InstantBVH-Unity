@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Gist;
+using System.Collections.Generic;
+using Reconnitioning.SpacePartition;
 
 namespace Reconnitioning {
     [ExecuteInEditMode]
@@ -11,18 +13,18 @@ namespace Reconnitioning {
         public float range = 10f;
         public float angle = 90f;
 
+        public IVolumeEvent InSight;
+
+        void Update() {
+            foreach (var v in NarrowPhase())
+                InSight.Invoke (v);
+        }
         void OnDrawGizmos() {
             var r = Recon.Instance;
             if (r == null)
                 return;
             
             DrawRange (r.Fig);
-
-            var bvh = r.BVH;
-            if (bvh == null)
-                return;
-
-
         }
 
         #region Public
@@ -32,10 +34,35 @@ namespace Reconnitioning {
             
             var tr = transform;
             _fig.DrawFan (tr.position, Quaternion.LookRotation (-tr.up, tr.forward), range * Vector3.one, colorSpot, -angle, angle);
+
+            foreach (var v in NarrowPhase())
+                DrawInsight (v.GetBounds ().center);
         }
         public void DrawInsight (Vector3 posTo) {
             Gizmos.color = colorInsight;
             Gizmos.DrawLine (transform.position, posTo);
+        }
+        public Bounds SphereBounds() {
+            return new Bounds (transform.position, 2f * range * Vector3.one);
+        }
+        public bool Intersect(Vector3 position) {
+            var ray = position - transform.position;
+            return (ray.sqrMagnitude <= (range * range)
+                && Mathf.Acos (Vector3.Dot (transform.forward, ray.normalized)) <= (angle * Mathf.Deg2Rad));
+        }
+        public IEnumerable<IVolume> Broadphase() {
+            Recon r;
+            BVHController<IVolume> bvh;
+            if ((r = Recon.Instance) == null || (bvh = r.BVH) == null)
+                yield break;
+
+            foreach (var v in bvh.Intersect(SphereBounds()))
+                yield return v;
+        }
+        public IEnumerable<IVolume> NarrowPhase() {
+            foreach (var v in Broadphase())
+                if (Intersect (v.GetBounds ().center))
+                    yield return v;
         }
         #endregion
     }

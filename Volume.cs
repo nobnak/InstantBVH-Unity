@@ -3,10 +3,12 @@ using System.Collections;
 using Gist.Extensions.AABB;
 
 namespace Reconnitioning {
-    #region Interface
+    #region Definitions
     public interface IVolume {
         Bounds GetBounds();
     }
+    [System.Serializable]
+    public class IVolumeEvent : UnityEngine.Events.UnityEvent<IVolume> {}
     #endregion
         
     [ExecuteInEditMode]
