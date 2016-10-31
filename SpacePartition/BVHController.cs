@@ -59,7 +59,8 @@ namespace Reconnitioning.SpacePartition {
                     yield return j;
 
             foreach (var i in t.Values)
-                yield return i;
+                if (i != null)
+                    yield return i;
 
         }
         public static IList<int> Swap (IList<int> list, int i, int j) {
