@@ -15,9 +15,15 @@ namespace Reconnitioning {
 
         public IVolumeEvent InSight;
 
+        IVolume[] _selfVolumes;
+
+        void Start() {
+            _selfVolumes = GetComponentsInChildren<IVolume> ();
+        }
         void Update() {
             foreach (var v in NarrowPhase())
-                InSight.Invoke (v);
+                if (!SelfIntersection(v))
+                    InSight.Invoke (v);
         }
         void OnDrawGizmos() {
             var r = Recon.Instance;
@@ -37,6 +43,12 @@ namespace Reconnitioning {
 
             foreach (var v in NarrowPhase())
                 DrawInsight (v.GetBounds ().center);
+        }
+        public bool SelfIntersection(IVolume v) {
+            foreach (var w in _selfVolumes)
+                if (v == w)
+                    return true;
+            return false;
         }
         public void DrawInsight (Vector3 posTo) {
             Gizmos.color = colorInsight;
