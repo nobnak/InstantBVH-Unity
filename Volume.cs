@@ -40,7 +40,7 @@ namespace Reconnitioning {
 
         #region IVolume implementation
         public Bounds GetBounds () {
-            return transform.ToWorld(localBounds);
+            return transform.EncapsulateInWorldBounds(localBounds);
         }
         #endregion
     }
