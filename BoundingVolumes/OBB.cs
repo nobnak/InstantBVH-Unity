@@ -14,8 +14,11 @@ namespace Recon.BoundingVolumes {
             this.axis = axis;
         }
 
+        public Matrix4x4 ModelMatrix() {
+            return Matrix4x4.TRS (center, axis, size);
+        }
         public OBB DrawGizmos() {
-            Gizmos.matrix = Matrix4x4.TRS (center, axis, size);
+            Gizmos.matrix = ModelMatrix ();
             Gizmos.DrawWireCube (Vector3.zero, Vector3.one);
             return this;
         }
