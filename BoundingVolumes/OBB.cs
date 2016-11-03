@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Recon.BoundingVolumes {
 
-    public class OBB {
+    public class OBB : IConvexPolyhedron {
         public Vector3 center;
         public Vector3 size;
         public Quaternion axis;
@@ -22,6 +22,22 @@ namespace Recon.BoundingVolumes {
             Gizmos.DrawWireCube (Vector3.zero, Vector3.one);
             return this;
         }
+
+        #region IConvexPolyhedron implementation
+        public System.Collections.Generic.IEnumerable<Vector3> Edges () {
+            yield return axis * Vector3.right;
+            yield return axis * Vector3.up;
+            yield return axis * Vector3.forward;
+        }
+        public System.Collections.Generic.IEnumerable<Vector3> Vertices () {
+            var half = 0.5f * (axis * size);
+            for (var i = 0; i < 8; i++)
+                yield return new Vector3 (
+                    ((i & 1) != 0 ? 1 : -1) * half.x + center.x,
+                    ((i & 2) != 0 ? 1 : -1) * half.y + center.y,
+                    ((i & 4) != 0 ? 1 : -1) * half.z + center.z);
+        }
+        #endregion
 
         #region Static
         public static OBB Create(Transform tr, Bounds localBounds) {
