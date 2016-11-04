@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Gist.Extensions.AABB;
+using System.Collections.Generic;
 
 namespace Recon.BoundingVolumes {
 
@@ -19,12 +20,15 @@ namespace Recon.BoundingVolumes {
             return Matrix4x4.TRS (center, axis, size);
         }
         #region IConvexPolyhedron implementation
-        public System.Collections.Generic.IEnumerable<Vector3> Edges () {
+        public IEnumerable<Vector3> Normals () {
             yield return axis * Vector3.right;
             yield return axis * Vector3.up;
             yield return axis * Vector3.forward;
         }
-        public System.Collections.Generic.IEnumerable<Vector3> Vertices () {
+        public IEnumerable<Vector3> Edges() {
+            return Normals ();
+        }
+        public IEnumerable<Vector3> Vertices () {
             var x = 0.5f * size.x * (axis * Vector3.right);
             var y = 0.5f * size.y * (axis * Vector3.up);
             var z = 0.5f * size.z * (axis * Vector3.forward);

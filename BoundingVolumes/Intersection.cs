@@ -29,14 +29,18 @@ namespace Recon.BoundingVolumes {
             if (!a.WorldBounds ().Intersects (b.WorldBounds ()))
                 return false;
             
+            foreach (var ax in a.Normals())
+                if (ax.sqrMagnitude > E && !Intersect (ax, a.Vertices (), b.Vertices ()))
+                    return false;
+                
+            foreach (var bx in b.Normals())
+                if (bx.sqrMagnitude > E && !Intersect (bx, a.Vertices (), b.Vertices ()))
+                    return false;
+
             foreach (var ae in a.Edges()) {
                 foreach (var be in b.Edges()) {
-                    if (ae.sqrMagnitude > E && !Intersect (ae, a.Vertices (), b.Vertices ()))
-                        return false;
-                    if (be.sqrMagnitude > E && !Intersect (be, a.Vertices (), b.Vertices ()))
-                        return false;
-                    var ce = Vector3.Cross (ae, be);
-                    if (ce.sqrMagnitude > E && !Intersect (ce, a.Vertices (), b.Vertices ()))
+                    var cx = Vector3.Cross (ae, be);
+                    if (cx.sqrMagnitude > E && !Intersect (cx, a.Vertices (), b.Vertices ()))
                         return false;
                 }
             }

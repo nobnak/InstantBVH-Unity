@@ -27,15 +27,21 @@ namespace Recon.BoundingVolumes {
         }
 
         #region IConvexPolyhedron implementation
-        public IEnumerable<Vector3> Edges () {
+        public IEnumerable<Vector3> Normals () {
+            yield return axis * Vector3.forward;
+            yield return axis * new Vector3 (farBottomLeft.z, 0f, -farBottomLeft.x);
+            yield return axis * new Vector3 (farBottomLeft.z, 0f, farBottomLeft.x);
+            yield return axis * new Vector3 (0f, farBottomLeft.z, -farBottomLeft.y);
+            yield return axis * new Vector3 (0f, farBottomLeft.z, farBottomLeft.y);
+        }
+        public IEnumerable<Vector3> Edges() {
             yield return axis * Vector3.right;
             yield return axis * Vector3.up;
-            var v = axis * farBottomLeft;
-            for (var i = 0; i < 4; i++)
-                yield return new Vector3 (
-                    ((i & 1) != 0 ? 1 : -1) * v.x,
-                    ((i & 2) != 0 ? 1 : -1) * v.y,
-                    v.z);
+
+            yield return axis * farBottomLeft;
+            yield return axis * new Vector3 (-farBottomLeft.x, farBottomLeft.y, farBottomLeft.z);
+            yield return axis * new Vector3 (farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z);
+            yield return axis * new Vector3 (-farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z);
         }
         public IEnumerable<Vector3> Vertices () {
             yield return head;

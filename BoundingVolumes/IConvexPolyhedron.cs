@@ -6,6 +6,7 @@ namespace Recon.BoundingVolumes {
 
     public interface IConvexPolyhedron {
 
+        IEnumerable<Vector3> Normals();
         IEnumerable<Vector3> Edges();
         IEnumerable<Vector3> Vertices();
 
