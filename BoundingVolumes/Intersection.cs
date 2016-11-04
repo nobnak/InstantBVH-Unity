@@ -14,7 +14,7 @@ namespace Recon.BoundingVolumes {
                 var v = Vector3.Dot (axis, p);
                 if (v < min)
                     min = v;
-                else if (max < v)
+                if (max < v)
                     max = v;
             }
         }
