@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Gist.Extensions.AABB;
 
 namespace Recon.BoundingVolumes {
         
@@ -24,12 +25,6 @@ namespace Recon.BoundingVolumes {
         public float MaxRange() {
             return farBottomLeft.z;
         }
-        public Frustum DrawGizmos() {
-            Gizmos.matrix = Matrix4x4.TRS (head, axis, Vector3.one);
-            Gizmos.DrawLine (Vector3.zero, farBottomLeft);
-            Gizmos.DrawFrustum (Vector3.zero, FoV (), MaxRange (), 1e-6f, Aspect ());
-            return this;
-        }
 
         #region IConvexPolyhedron implementation
         public IEnumerable<Vector3> Edges () {
@@ -44,12 +39,37 @@ namespace Recon.BoundingVolumes {
         }
         public IEnumerable<Vector3> Vertices () {
             yield return head;
-            var v = axis * farBottomLeft;
+
+            var x = axis * new Vector3 (-farBottomLeft.x, 0f, 0f);
+            var y = axis * new Vector3 (0f, -farBottomLeft.y, 0f);
+            var z = head + axis * new Vector3 (0f, 0f, farBottomLeft.z);
             for (var i = 0; i < 4; i++)
-                yield return new Vector3 (
-                    ((i & 1) != 0 ? 1 : -1) * v.x + head.x,
-                    ((i & 2) != 0 ? 1 : -1) * v.y + head.y,
-                    v.z + head.z);
+                yield return z + ((i & 1) != 0 ? x : -x) + ((i & 2) != 0 ? y : -y);
+        }
+        public Bounds LocalBounds() {
+            return new Bounds (
+                new Vector3(0f, 0f, 0.5f * farBottomLeft.z),
+                new Vector3(-2f * farBottomLeft.x, -2f * farBottomLeft.y, farBottomLeft.z));
+        }
+        public Bounds WorldBounds() {
+            return LocalBounds().EncapsulateInWorldBounds (Matrix4x4.TRS (head, axis, Vector3.one));
+        }
+        public IConvexPolyhedron DrawGizmos() {
+            var color = Gizmos.color;
+            var aabb = WorldBounds ();
+            Gizmos.color = Color.gray;
+            Gizmos.matrix = Matrix4x4.identity;
+            Gizmos.DrawWireCube (aabb.center, aabb.size);
+
+            Gizmos.color = color;
+            foreach (var v in Vertices())
+                Gizmos.DrawSphere (v, 0.5f);
+            
+            Gizmos.matrix = Matrix4x4.TRS (head, axis, Vector3.one);
+            Gizmos.DrawLine (Vector3.zero, farBottomLeft);
+            Gizmos.DrawFrustum (Vector3.zero, FoV (), MaxRange (), 1e-6f, Aspect ());
+
+            return this;
         }
         #endregion
 

@@ -8,5 +8,10 @@ namespace Recon.BoundingVolumes {
 
         IEnumerable<Vector3> Edges();
         IEnumerable<Vector3> Vertices();
+
+        Bounds LocalBounds();
+        Bounds WorldBounds();
+
+        IConvexPolyhedron DrawGizmos();
     }
 }
