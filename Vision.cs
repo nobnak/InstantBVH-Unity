@@ -26,11 +26,7 @@ namespace Reconnitioning {
                     InSight.Invoke (v);
         }
         void OnDrawGizmos() {
-            var r = Recon.Instance;
-            if (r == null)
-                return;
-            
-            DrawRange (r.Fig);
+			DrawRange (GLFigure.Instance);
         }
 
         #region Public

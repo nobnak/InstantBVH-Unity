@@ -17,13 +17,13 @@ namespace Reconnitioning {
         public Color colorWorldBounds = Color.cyan;
         public Bounds localBounds = new Bounds(Vector3.zero, Vector3.one);
 
-        void Start () {
+		protected virtual void OnEnable () {
             Recon.Add (this);
         }
-        void OnDestroy() {
+		protected virtual void OnDisable() {
             Recon.Remove (this);
         }
-        void OnDrawGizmos() {
+        protected virtual void OnDrawGizmos() {
             if (!isActiveAndEnabled)
                 return;
             
@@ -39,7 +39,7 @@ namespace Reconnitioning {
         }
 
         #region IVolume implementation
-        public Bounds GetBounds () {
+		public virtual Bounds GetBounds () {
             return transform.EncapsulateInWorldBounds(localBounds);
         }
         #endregion
