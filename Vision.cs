@@ -54,7 +54,7 @@ namespace Reconnitioning {
             Gizmos.color = colorInsight;
             Gizmos.DrawLine (transform.position, posTo);
         }
-        public Bounds SphereBounds() {
+        public Bounds WorldBounds() {
             return new Bounds (transform.position, 2f * range * Vector3.one);
         }
         public bool Intersect(Vector3 position) {
@@ -68,7 +68,7 @@ namespace Reconnitioning {
             if ((r = Recon.Instance) == null || (bvh = r.BVH) == null)
                 yield break;
 
-            foreach (var v in bvh.Intersect(SphereBounds()))
+            foreach (var v in bvh.Intersect(WorldBounds()))
                 yield return v;
         }
         public IEnumerable<IVolume> NarrowPhase() {

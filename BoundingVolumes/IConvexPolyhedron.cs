@@ -13,6 +13,12 @@ namespace Recon.BoundingVolumes {
         Bounds LocalBounds();
         Bounds WorldBounds();
 
-        IConvexPolyhedron DrawGizmos();
+		IConvexPolyhedron DrawGizmos();
     }
+
+	public static class ConvexPolyhedronSettings {
+		public static Color GizmoAABBColor = Color.gray;
+		public static Color GizmoLineColor = new Color (0.6f, 0.8f, 0.2f);
+		public static Color GizmoSurfaceColor = new Color(0.6f, 0.8f, 0.2f, 0f);
+	}
 }

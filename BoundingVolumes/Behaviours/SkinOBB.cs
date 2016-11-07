@@ -11,7 +11,7 @@ namespace Recon.BoundingVolumes.Behaviour {
         OBB _obb;
 
         protected void OnDrawGizmos() {
-            if (!isActiveAndEnabled)
+			if (!isActiveAndEnabled || _obb == null)
                 return;
 
             AssureUpdateConvex ();

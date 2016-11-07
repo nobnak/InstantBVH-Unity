@@ -43,17 +43,23 @@ namespace Recon.BoundingVolumes {
             return LocalBounds().EncapsulateInWorldBounds(Matrix4x4.TRS(center, axis, Vector3.one));
         }
         public IConvexPolyhedron DrawGizmos() {
-            var color = Gizmos.color;
             var aabb = WorldBounds ();
-            Gizmos.color = Color.gray;
+			var modelmat = ModelMatrix ();
+
+			Gizmos.color = ConvexPolyhedronSettings.GizmoAABBColor;
             Gizmos.matrix = Matrix4x4.identity;
             Gizmos.DrawWireCube (aabb.center, aabb.size);
 
-            Gizmos.color = color;
-            foreach (var v in Vertices())
-                Gizmos.DrawSphere (v, 0.5f);
+			Gizmos.color = ConvexPolyhedronSettings.GizmoSurfaceColor;
+			Gizmos.matrix = modelmat;
+			Gizmos.DrawCube (Vector3.zero, Vector3.one);
 
-            Gizmos.matrix = ModelMatrix ();
+			Gizmos.color = ConvexPolyhedronSettings.GizmoLineColor;
+			Gizmos.matrix = Matrix4x4.identity;
+            foreach (var v in Vertices())
+                Gizmos.DrawSphere (v, 0.4f);
+
+			Gizmos.matrix = modelmat;
             Gizmos.DrawWireCube (Vector3.zero, Vector3.one);
 
             return this;

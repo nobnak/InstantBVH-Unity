@@ -11,7 +11,7 @@ namespace Recon.BoundingVolumes.Behaviour {
         Frustum _frustum;
          
         void OnDrawGizmos() {
-            if (!isActiveAndEnabled)
+			if (!isActiveAndEnabled || _frustum == null)
                 return;
             
             AssureUpdateConvex ();            
