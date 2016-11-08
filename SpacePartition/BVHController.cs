@@ -2,12 +2,12 @@
 using System.Collections;
 using Gist;
 using Gist.Extensions.AABB;
-using Reconnitioning.Treap;
+using Recon.Treap;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace Reconnitioning.SpacePartition {
+namespace Recon.SpacePartition {
 
     public class BVHController<Value> where Value : class {
         public BVH<Value> Root { get { return _root; } }

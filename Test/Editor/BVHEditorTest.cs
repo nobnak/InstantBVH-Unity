@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using NUnit.Framework;
-using Reconnitioning.SpacePartition;
+using Recon.SpacePartition;
 using System.Text;
 
-namespace Reconnitioning {
+namespace Recon {
         
     public class BVHEditorTest {
 

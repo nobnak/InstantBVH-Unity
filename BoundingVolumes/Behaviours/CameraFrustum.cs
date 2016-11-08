@@ -4,17 +4,22 @@ using Recon.BoundingVolumes;
 
 namespace Recon.BoundingVolumes.Behaviour {
     [RequireComponent(typeof(Camera))]
-    public class CameraFrustum : ConvexBehaviour {
+    public class CameraFrustum : ConvexBuilder {
         public Color color;
 
+        ConvexUpdator _convUp;
         Camera _attachedCamera;
         Frustum _frustum;
+
+        protected virtual void Awake() {
+            _convUp = new ConvexUpdator(this);
+        }
          
         void OnDrawGizmos() {
 			if (!isActiveAndEnabled || _frustum == null)
                 return;
             
-            AssureUpdateConvex ();            
+            _convUp.AssureUpdateConvex ();            
             Gizmos.color = color;
             _frustum.DrawGizmos ();
         }
@@ -23,14 +28,11 @@ namespace Recon.BoundingVolumes.Behaviour {
             get { return _attachedCamera; }
         }
 
-        #region implemented abstract members of ConvexBehaviour
+        #region implemented abstract members of IConvex
         public override IConvexPolyhedron GetConvexPolyhedron () {
-            AssureUpdateConvex ();
+            _convUp.AssureUpdateConvex ();
             return _frustum;
         }
-        #endregion
-
-        #region implemented abstract members of ConvexBehaviour
         public override bool StartConvex () {
             if (_attachedCamera == null)
                 _attachedCamera = GetComponent<Camera> ();

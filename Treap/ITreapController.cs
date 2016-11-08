@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Reconnitioning.Treap {
+namespace Recon.Treap {
 
     public interface ITreapController<Value> {
         bool TryGet(ulong key, out Treap<Value> n);

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Gist;
 
-namespace Reconnitioning.Treap {
+namespace Recon.Treap {
 
     public class TreapEditorTest {
     	[Test]

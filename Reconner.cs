@@ -2,30 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using Gist;
-using Reconnitioning.SpacePartition;
+using Recon.SpacePartition;
+using Recon.VisibleArea;
 
-namespace Reconnitioning {
+namespace Recon {
     [ExecuteInEditMode]
-    public class Recon : MonoBehaviour {
+    public class Reconner : MonoBehaviour {
         void Update() {
             RebuildBVH ();
         }
         void OnDrawGizmos() {
-            if (Recon._bvh == null)
+            if (Reconner._bvh == null)
                 return;
             Gizmos.color = gizmoColorBounds;
-            Recon._bvh.DrawBounds (0, 10);
+            Reconner._bvh.DrawBounds (0, 10);
         }
 
 		public Color gizmoColorBounds = Color.green;
-        public BVHController<IVolume> BVH { get { return Recon._bvh; } }
+        public BVHController<IVolume> BVH { get { return Reconner._bvh; } }
 
         public BVHController<IVolume> RebuildBVH () {
-            Recon._bounds.Clear ();
-            var vals = Recon._database.GetList ();
+            Reconner._bounds.Clear ();
+            var vals = Reconner._database.GetList ();
             for (var i = 0; i < vals.Count; i++)
-                Recon._bounds.Add (vals [i].GetBounds ());
-            return Recon._bvh.Build (Recon._bounds, vals);
+                Reconner._bounds.Add (vals [i].GetBounds ());
+            return Reconner._bvh.Build (Reconner._bounds, vals);
         }
 
         #region Static
@@ -33,13 +34,13 @@ namespace Reconnitioning {
 		static BVHController<IVolume> _bvh;
 		static List<Bounds> _bounds;
 
-		static Recon() {
+		static Reconner() {
 			_database = new Dataset<IVolume> ();
 			_bvh = new BVHController<IVolume> ();
 			_bounds = new List<Bounds> ();
 		}
 
-        public static Recon Instance { get; protected set; }
+        public static Reconner Instance { get; protected set; }
         public static void Add(IVolume vol) {
             _database.Add (vol);
         }

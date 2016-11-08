@@ -57,7 +57,7 @@ namespace Recon.BoundingVolumes {
 			Gizmos.color = ConvexPolyhedronSettings.GizmoLineColor;
 			Gizmos.matrix = Matrix4x4.identity;
             foreach (var v in Vertices())
-                Gizmos.DrawSphere (v, 0.4f);
+                Gizmos.DrawSphere (v, ConvexPolyhedronSettings.GizmoVertexSize);
 
 			Gizmos.matrix = modelmat;
             Gizmos.DrawWireCube (Vector3.zero, Vector3.one);

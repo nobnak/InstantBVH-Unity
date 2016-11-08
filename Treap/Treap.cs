@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Gist;
 
-namespace Reconnitioning.Treap {
+namespace Recon.Treap {
     
     public class Treap<Value> {
         public ulong key;

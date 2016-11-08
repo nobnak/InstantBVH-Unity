@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Reconnitioning.Treap;
+using Recon.Treap;
 using System.Linq;
 using Gist;
 using Gist.Extensions.AABB;
 using Gist.Extensions.Range;
 
-namespace Reconnitioning.SpacePartition {
+namespace Recon.SpacePartition {
     
 	public class BVH<Value> where Value : class {
 

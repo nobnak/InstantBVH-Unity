@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Reconnitioning {
+namespace Recon {
     
     public class Dataset<T> {
         bool _changed = true;

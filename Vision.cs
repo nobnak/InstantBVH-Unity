@@ -2,9 +2,10 @@
 using System.Collections;
 using Gist;
 using System.Collections.Generic;
-using Reconnitioning.SpacePartition;
+using Recon.SpacePartition;
+using Recon.VisibleArea;
 
-namespace Reconnitioning {
+namespace Recon {
     [ExecuteInEditMode]
     public class Vision : MonoBehaviour {
         public Color colorInsight = new Color (0.654f, 1f, 1f);
@@ -59,9 +60,9 @@ namespace Reconnitioning {
                 && Mathf.Acos (Vector3.Dot (transform.forward, ray.normalized)) <= (angle * Mathf.Deg2Rad));
         }
         public IEnumerable<IVolume> Broadphase() {
-            Recon r;
+            Reconner r;
             BVHController<IVolume> bvh;
-            if ((r = Recon.Instance) == null || (bvh = r.BVH) == null)
+            if ((r = Reconner.Instance) == null || (bvh = r.BVH) == null)
                 yield break;
 
             foreach (var v in bvh.Intersect(WorldBounds()))
