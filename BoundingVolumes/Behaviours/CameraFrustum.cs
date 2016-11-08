@@ -11,15 +11,11 @@ namespace Recon.BoundingVolumes.Behaviour {
         Camera _attachedCamera;
         Frustum _frustum;
 
-        protected virtual void Awake() {
-            _convUp = new ConvexUpdator(this);
-        }
-         
         void OnDrawGizmos() {
 			if (!isActiveAndEnabled || _frustum == null)
                 return;
             
-            _convUp.AssureUpdateConvex ();            
+            ConvUp.AssureUpdateConvex ();            
             Gizmos.color = color;
             _frustum.DrawGizmos ();
         }
@@ -27,10 +23,13 @@ namespace Recon.BoundingVolumes.Behaviour {
         public Camera AttachedCamera {
             get { return _attachedCamera; }
         }
+        public ConvexUpdator ConvUp {
+            get { return (_convUp == null ? (_convUp = new ConvexUpdator (this)) : _convUp); }
+        }
 
         #region implemented abstract members of IConvex
         public override IConvexPolyhedron GetConvexPolyhedron () {
-            _convUp.AssureUpdateConvex ();
+            ConvUp.AssureUpdateConvex ();
             return _frustum;
         }
         public override bool StartConvex () {

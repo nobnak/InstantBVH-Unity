@@ -11,18 +11,18 @@ namespace Recon.BoundingVolumes.Behaviour {
         SkinnedMeshRenderer _attachedSkinmesh;
         OBB _obb;
 
-        protected virtual void Awake() {
-            _convUp = new ConvexUpdator (this);
-        }
-
         protected void OnDrawGizmos() {
 			if (!isActiveAndEnabled || _obb == null)
                 return;
 
-            _convUp.AssureUpdateConvex ();
+            ConvUp.AssureUpdateConvex ();
             Gizmos.color = color;
             _obb.DrawGizmos ();
 
+        }
+
+        public ConvexUpdator ConvUp {
+            get { return (_convUp == null ? (_convUp = new ConvexUpdator (this)) : _convUp); }
         }
 
         #region Skinned Mesh
@@ -32,7 +32,7 @@ namespace Recon.BoundingVolumes.Behaviour {
         #endregion
         #region implemented abstract members of IConvex
         public override IConvexPolyhedron GetConvexPolyhedron () {
-            _convUp.AssureUpdateConvex ();
+            ConvUp.AssureUpdateConvex ();
             return _obb;
         }
         public override bool StartConvex () {
