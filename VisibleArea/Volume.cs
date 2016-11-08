@@ -16,11 +16,8 @@ namespace Recon.VisibleArea {
         
     [ExecuteInEditMode]
     public abstract class Volume : MonoBehaviour, IVolume, IConvex {
-        protected ConvexUpdator _convUp;
+        ConvexUpdator _convUp;
 
-        protected virtual void Awake() {
-            _convUp = new ConvexUpdator(this);
-        }
 		protected virtual void OnEnable () {
             Reconner.Add (this);
         }
@@ -33,6 +30,12 @@ namespace Recon.VisibleArea {
                 return;
             conv.DrawGizmos ();
         }
+
+        #region ConvexUpdator
+        public ConvexUpdator ConvUp {
+            get { return _convUp == null ? (_convUp = new ConvexUpdator (this)) : _convUp; }
+        }
+        #endregion
 
         #region IConvex implementation
         public abstract IConvexPolyhedron GetConvexPolyhedron ();

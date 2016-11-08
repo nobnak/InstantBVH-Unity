@@ -19,9 +19,9 @@ namespace Recon {
         }
 
 		public Color gizmoColorBounds = Color.green;
-        public BVHController<IVolume> BVH { get { return Reconner._bvh; } }
+        public BVHController<Volume> BVH { get { return Reconner._bvh; } }
 
-        public BVHController<IVolume> RebuildBVH () {
+        public BVHController<Volume> RebuildBVH () {
             Reconner._bounds.Clear ();
             var vals = Reconner._database.GetList ();
             for (var i = 0; i < vals.Count; i++)
@@ -30,21 +30,21 @@ namespace Recon {
         }
 
         #region Static
-		static Dataset<IVolume> _database;
-		static BVHController<IVolume> _bvh;
+		static Dataset<Volume> _database;
+		static BVHController<Volume> _bvh;
 		static List<Bounds> _bounds;
 
 		static Reconner() {
-			_database = new Dataset<IVolume> ();
-			_bvh = new BVHController<IVolume> ();
+			_database = new Dataset<Volume> ();
+			_bvh = new BVHController<Volume> ();
 			_bounds = new List<Bounds> ();
 		}
 
         public static Reconner Instance { get; protected set; }
-        public static void Add(IVolume vol) {
+        public static void Add(Volume vol) {
             _database.Add (vol);
         }
-        public static bool Remove(IVolume vol) {
+        public static bool Remove(Volume vol) {
             return _database.Remove (vol) >= 0;
         }
         #endregion

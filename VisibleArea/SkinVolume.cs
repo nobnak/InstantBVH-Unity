@@ -10,7 +10,7 @@ namespace Recon.VisibleArea {
 
         #region implemented abstract members of Volume
         public override IConvexPolyhedron GetConvexPolyhedron () {
-            _convUp.AssureUpdateConvex ();
+            ConvUp.AssureUpdateConvex ();
             return _obb;
         }
         public override bool StartConvex () {

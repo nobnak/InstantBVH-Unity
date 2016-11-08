@@ -88,6 +88,12 @@ namespace Recon.BoundingVolumes {
             var x = y * cam.aspect;
             return new Frustum (cam.transform.position, new Vector3 (-x, -y, z), cam.transform.rotation);            
         }
+        public static Frustum Create(Vector3 position, Quaternion rotation, float horAngle, float verAngle, float range) {
+            var z = range;
+            var y = z * Mathf.Tan (verAngle * Mathf.Deg2Rad);
+            var x = z * Mathf.Tan (horAngle * Mathf.Deg2Rad);
+            return new Frustum (position, new Vector3 (-x, -y, z), rotation);
+        }
         #endregion
     }
 }

@@ -4,73 +4,95 @@ using Gist;
 using System.Collections.Generic;
 using Recon.SpacePartition;
 using Recon.VisibleArea;
+using Recon.BoundingVolumes.Behaviour;
+using Recon.BoundingVolumes;
 
 namespace Recon {
     [ExecuteInEditMode]
-    public class Vision : MonoBehaviour {
+    public class Vision : MonoBehaviour, IConvex {
         public Color colorInsight = new Color (0.654f, 1f, 1f);
         public Color colorSpot = new Color (1f, 0.65f, 1f);
 
         public float range = 10f;
         public float angle = 90f;
+        public float vertAngle = 45f;
 
         public IVolumeEvent InSight;
 
-        IVolume[] _selfVolumes;
+        Volume[] _selfVolumes;
+        ConvexUpdator _convUp;
+        Frustum _frustum;
 
         void Start() {
-            _selfVolumes = GetComponentsInChildren<IVolume> ();
+            _selfVolumes = GetComponentsInChildren<Volume> ();
         }
         void Update() {
             foreach (var v in NarrowPhase())
-                if (!SelfIntersection(v))
-                    InSight.Invoke (v);
+                InSight.Invoke (v);
         }
         void OnDrawGizmos() {
-			DrawRange (GLFigure.Instance);
-        }
-
-        #region Public
-        public void DrawRange (GLFigure _fig) {
-            if (_fig == null)
+            if (!isActiveAndEnabled)
                 return;
             
-            var tr = transform;
-            _fig.DrawFan (tr.position, Quaternion.LookRotation (-tr.up, tr.forward), range * Vector3.one, colorSpot, -angle, angle);
-
+            ConvUp.AssureUpdateConvex ();
+            _frustum.DrawGizmos ();
             foreach (var v in NarrowPhase())
                 DrawInsight (v.GetBounds ().center);
         }
-        public bool SelfIntersection(IVolume v) {
+
+        #region ConvexUpdator
+        public ConvexUpdator ConvUp {
+            get { return _convUp == null ? (_convUp = new ConvexUpdator (this)) : _convUp; }
+        }
+        #endregion
+
+        #region Gizmos
+        public void DrawInsight (Vector3 posTo) {
+            Gizmos.color = colorInsight;
+            Gizmos.DrawLine (transform.position, posTo);
+        }
+        #endregion
+
+        #region IConvex implementation
+        public IConvexPolyhedron GetConvexPolyhedron () {
+            ConvUp.AssureUpdateConvex ();
+            return _frustum;
+        }
+        public bool StartConvex () {
+            range = Mathf.Clamp (range, 0f, float.MaxValue);
+            angle = Mathf.Clamp (angle, 0f, 179f);
+            vertAngle = Mathf.Clamp (vertAngle, 0f, 179f);
+            return true;
+        }
+        public bool UpdateConvex () {
+            return (_frustum = Frustum.Create (transform.position, transform.rotation, angle, vertAngle, range)) != null;
+        }
+        #endregion
+
+        #region Intersection
+        public bool SelfIntersection(Volume v) {
             foreach (var w in _selfVolumes)
                 if (v == w)
                     return true;
             return false;
         }
-        public void DrawInsight (Vector3 posTo) {
-            Gizmos.color = colorInsight;
-            Gizmos.DrawLine (transform.position, posTo);
-        }
         public Bounds WorldBounds() {
-            return new Bounds (transform.position, 2f * range * Vector3.one);
+            ConvUp.AssureUpdateConvex ();
+            return ConvUp.GetConvexPolyhedron ().WorldBounds ();
         }
-        public bool Intersect(Vector3 position) {
-            var ray = position - transform.position;
-            return (ray.sqrMagnitude <= (range * range)
-                && Mathf.Acos (Vector3.Dot (transform.forward, ray.normalized)) <= (angle * Mathf.Deg2Rad));
-        }
-        public IEnumerable<IVolume> Broadphase() {
+        public IEnumerable<Volume> Broadphase() {
             Reconner r;
-            BVHController<IVolume> bvh;
+            BVHController<Volume> bvh;
             if ((r = Reconner.Instance) == null || (bvh = r.BVH) == null)
                 yield break;
 
             foreach (var v in bvh.Intersect(WorldBounds()))
                 yield return v;
         }
-        public IEnumerable<IVolume> NarrowPhase() {
+        public IEnumerable<Volume> NarrowPhase() {
+            var conv = GetConvexPolyhedron ();
             foreach (var v in Broadphase())
-                if (Intersect (v.GetBounds ().center))
+                if (v.GetConvexPolyhedron().Intersect(conv) && !SelfIntersection(v))
                     yield return v;
         }
         #endregion
