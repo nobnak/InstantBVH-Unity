@@ -50,7 +50,6 @@ namespace Recon {
         #region Gizmos
         public void DrawInsight (Vector3 posTo) {
             Gizmos.color = colorInsight;
-            Gizmos.matrix = Matrix4x4.identity;
             Gizmos.DrawLine (transform.position, posTo);
         }
         #endregion
@@ -94,7 +93,7 @@ namespace Recon {
         public IEnumerable<Volume> NarrowPhase(IEnumerable<Volume> broadphased) {
             var conv = GetConvexPolyhedron ();
             foreach (var v in broadphased)
-                if (v.GetConvexPolyhedron().Intersect(conv))
+                if (v.GetConvexPolyhedron().Intersect(conv) && !SelfIntersection(v))
                     yield return v;
         }
         #endregion
