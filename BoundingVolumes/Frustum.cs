@@ -92,8 +92,8 @@ namespace Recon.BoundingVolumes {
         }
         public static Frustum Create(Vector3 position, Quaternion rotation, float horAngle, float verAngle, float range) {
             var z = range;
-            var y = z * Mathf.Tan (verAngle * Mathf.Deg2Rad);
-            var x = z * Mathf.Tan (horAngle * Mathf.Deg2Rad);
+            var y = z * Mathf.Tan (0.5f * verAngle * Mathf.Deg2Rad);
+            var x = z * Mathf.Tan (0.5f * horAngle * Mathf.Deg2Rad);
             return new Frustum (position, new Vector3 (-x, -y, z), rotation);
         }
         #endregion
