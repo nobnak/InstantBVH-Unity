@@ -23,6 +23,12 @@ namespace Recon {
             var bvh = new BVHController<Value> ();
             bvh.Build (bounds, vals);
 
+            var nodeCount = bvh.Count ();
+            var valueCount = bvh.CountValues ();
+            bvh.Build (bounds, vals);
+            Assert.AreEqual(nodeCount, bvh.Count ());
+            Assert.AreEqual (valueCount, bvh.CountValues ());
+
             Assert.AreEqual (0, bvh.Root.offset);
             Assert.AreEqual (n, bvh.Root.length);
             for (var i = 0; i < 3; i++) {

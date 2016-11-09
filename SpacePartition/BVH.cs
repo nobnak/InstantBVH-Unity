@@ -51,7 +51,7 @@ namespace Recon.SpacePartition {
 
             for (var i = 0; i < 2; i++)
                 Clear (t.ch [i], alloc);
-            return alloc.Free (t);
+            return alloc.Free (t.Clear());
         }
         #endregion
         #region Gizmo

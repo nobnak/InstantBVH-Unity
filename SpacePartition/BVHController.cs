@@ -48,19 +48,31 @@ namespace Recon.SpacePartition {
         public IEnumerable<Value> Intersect(Bounds bb) {
             return Intersect (_root, bb);
         }
+        public int Count() { return Count(_root); }
+        public int CountValues() {
+            return CountValues (_root);
+        }
 
         #region Static
+        public static int Count(BVH<Value> t) {
+            if (t == null)
+                return 0;
+            return 1 + Count (t.ch [0]) + Count (t.ch [1]);
+        }
+        public static int CountValues(BVH<Value> t) {
+            return t == null ? 0 : (t.Values.Count + CountValues (t.ch [0]) + CountValues (t.ch [1]));
+        }
         public static IEnumerable<Value> Intersect(BVH<Value> t, Bounds bb) {
             if (t == null || !t.bb.Intersects (bb))
                 yield break;
             
-            foreach (var i in t.ch)
-                foreach (var j in Intersect(i, bb))
-                    yield return j;
+            foreach (var s in t.ch)
+                foreach (var r in Intersect(s, bb))
+                    yield return r;
 
-            foreach (var i in t.Values)
-                if (i != null)
-                    yield return i;
+            foreach (var v in t.Values)
+                if (v != null)
+                    yield return v;
 
         }
         public static IList<int> Swap (IList<int> list, int i, int j) {

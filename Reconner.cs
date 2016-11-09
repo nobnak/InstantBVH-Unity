@@ -8,6 +8,9 @@ using Recon.VisibleArea;
 namespace Recon {
     [ExecuteInEditMode]
     public class Reconner : MonoBehaviour {
+        void OnEnable() {
+            Instance = this;
+        }
         void Update() {
             RebuildBVH ();
         }

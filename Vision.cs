@@ -6,6 +6,7 @@ using Recon.SpacePartition;
 using Recon.VisibleArea;
 using Recon.BoundingVolumes.Behaviour;
 using Recon.BoundingVolumes;
+using System.Linq;
 
 namespace Recon {
     [ExecuteInEditMode]
@@ -27,8 +28,11 @@ namespace Recon {
             _selfVolumes = GetComponentsInChildren<Volume> ();
         }
         void Update() {
+            //Debug.LogFormat ("Broadphase count {0}", Broadphase ().Count ());
+            #if false
             foreach (var v in NarrowPhase())
                 InSight.Invoke (v);
+            #endif
         }
         void OnDrawGizmos() {
             if (!isActiveAndEnabled)
@@ -36,8 +40,10 @@ namespace Recon {
             
             ConvUp.AssureUpdateConvex ();
             _frustum.DrawGizmos ();
+            #if false
             foreach (var v in NarrowPhase())
                 DrawInsight (v.GetBounds ().center);
+            #endif
         }
 
         #region ConvexUpdator
@@ -92,7 +98,7 @@ namespace Recon {
         public IEnumerable<Volume> NarrowPhase() {
             var conv = GetConvexPolyhedron ();
             foreach (var v in Broadphase())
-                if (v.GetConvexPolyhedron().Intersect(conv) && !SelfIntersection(v))
+                if (v.GetConvexPolyhedron().Intersect(conv))
                     yield return v;
         }
         #endregion
