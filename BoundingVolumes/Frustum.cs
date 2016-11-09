@@ -77,6 +77,8 @@ namespace Recon.BoundingVolumes {
 			Gizmos.matrix = modelmat;
             Gizmos.DrawFrustum (Vector3.zero, FoV (), MaxRange (), 1e-6f, Aspect ());
 
+            Gizmos.matrix = Matrix4x4.identity;
+
             return this;
         }
         #endregion

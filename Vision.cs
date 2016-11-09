@@ -28,11 +28,8 @@ namespace Recon {
             _selfVolumes = GetComponentsInChildren<Volume> ();
         }
         void Update() {
-            //Debug.LogFormat ("Broadphase count {0}", Broadphase ().Count ());
-            #if false
-            foreach (var v in NarrowPhase())
+            foreach (var v in NarrowPhase(Broadphase()))
                 InSight.Invoke (v);
-            #endif
         }
         void OnDrawGizmos() {
             if (!isActiveAndEnabled)
@@ -40,10 +37,8 @@ namespace Recon {
             
             ConvUp.AssureUpdateConvex ();
             _frustum.DrawGizmos ();
-            #if false
-            foreach (var v in NarrowPhase())
+            foreach (var v in NarrowPhase(Broadphase()))
                 DrawInsight (v.GetBounds ().center);
-            #endif
         }
 
         #region ConvexUpdator
@@ -55,6 +50,7 @@ namespace Recon {
         #region Gizmos
         public void DrawInsight (Vector3 posTo) {
             Gizmos.color = colorInsight;
+            Gizmos.matrix = Matrix4x4.identity;
             Gizmos.DrawLine (transform.position, posTo);
         }
         #endregion
@@ -95,9 +91,9 @@ namespace Recon {
             foreach (var v in bvh.Intersect(WorldBounds()))
                 yield return v;
         }
-        public IEnumerable<Volume> NarrowPhase() {
+        public IEnumerable<Volume> NarrowPhase(IEnumerable<Volume> broadphased) {
             var conv = GetConvexPolyhedron ();
-            foreach (var v in Broadphase())
+            foreach (var v in broadphased)
                 if (v.GetConvexPolyhedron().Intersect(conv))
                     yield return v;
         }

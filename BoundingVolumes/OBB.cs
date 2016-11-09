@@ -62,6 +62,8 @@ namespace Recon.BoundingVolumes {
 			Gizmos.matrix = modelmat;
             Gizmos.DrawWireCube (Vector3.zero, Vector3.one);
 
+            Gizmos.matrix = Matrix4x4.identity;
+
             return this;
         }
         #endregion
