@@ -18,7 +18,7 @@ namespace Recon {
         public float angle = 90f;
         public float vertAngle = 45f;
 
-        public IVolumeEvent InSight;
+        public VolumeEvent InSight;
 
         Volume[] _selfVolumes;
         ConvexUpdator _convUp;

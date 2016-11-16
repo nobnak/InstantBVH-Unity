@@ -11,7 +11,7 @@ namespace Recon.VisibleArea {
         Bounds GetBounds();
     }
     [System.Serializable]
-    public class IVolumeEvent : UnityEngine.Events.UnityEvent<IVolume> {}
+    public class VolumeEvent : UnityEngine.Events.UnityEvent<Volume> {}
     #endregion
         
     [ExecuteInEditMode]
