@@ -18,18 +18,25 @@ namespace Recon {
         public float angle = 90f;
         public float vertAngle = 45f;
 
+        public VolumeEvent EnterSight;
+        public VolumeEvent ExitSight;
         public VolumeEvent InSight;
 
+        List<Volume> _insightVolumes;
         Volume[] _selfVolumes;
         ConvexUpdator _convUp;
         Frustum _frustum;
 
-        void Start() {
+        void Awake() {
+            _insightVolumes = new List<Volume> ();
             _selfVolumes = GetComponentsInChildren<Volume> ();
         }
         void Update() {
+            _insightVolumes.Clear ();
             foreach (var v in NarrowPhase(Broadphase()))
-                InSight.Invoke (v);
+                _insightVolumes.Add (v);
+            foreach (var v in _insightVolumes)
+                InSight.Invoke (v);            
         }
         void OnDrawGizmos() {
             if (!isActiveAndEnabled)
@@ -40,6 +47,8 @@ namespace Recon {
             foreach (var v in NarrowPhase(Broadphase()))
                 DrawInsight (v.GetBounds ().center);
         }
+
+        public IList<Volume> InSightVolumes { get { return _insightVolumes; } }
 
         #region ConvexUpdator
         public ConvexUpdator ConvUp {
