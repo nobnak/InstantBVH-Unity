@@ -18,8 +18,6 @@ namespace Recon {
         public float angle = 90f;
         public float vertAngle = 45f;
 
-        public VolumeEvent EnterSight;
-        public VolumeEvent ExitSight;
         public VolumeEvent InSight;
 
         List<Volume> _insightVolumes;
