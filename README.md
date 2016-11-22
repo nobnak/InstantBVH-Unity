@@ -12,5 +12,5 @@
 ### Git Submodule
 ###### Use this as a submodule
 ```
-git submodule add git@github.com:nobnak/Recon.git Assets/Packages/Recon
+git submodule add https://github.com/nobnak/Recon.git Assets/Packages/Recon
 ```
