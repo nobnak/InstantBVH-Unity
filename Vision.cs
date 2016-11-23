@@ -15,6 +15,7 @@ namespace Recon {
         public Color colorSpot = new Color (1f, 0.65f, 1f);
 
         public float range = 10f;
+        public float nearClip = 1f;
         public float angle = 90f;
         public float vertAngle = 45f;
 
@@ -73,7 +74,7 @@ namespace Recon {
             return true;
         }
         public bool UpdateConvex () {
-            return (_frustum = Frustum.Create (transform.position, transform.rotation, angle, vertAngle, range)) != null;
+            return (_frustum = Frustum.Create (transform.position, transform.rotation, angle, vertAngle, nearClip, range)) != null;
         }
         #endregion
 
