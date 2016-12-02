@@ -48,6 +48,9 @@ namespace Recon {
         }
 
         public IList<Volume> InSightVolumes { get { return _insightVolumes; } }
+        public Frustum CreateFrustum () {
+            return Frustum.Create (transform.position, transform.rotation, angle, vertAngle, nearClip, range);
+        }
 
         #region ConvexUpdator
         public ConvexUpdator ConvUp {
@@ -74,7 +77,7 @@ namespace Recon {
             return true;
         }
         public bool UpdateConvex () {
-            return (_frustum = Frustum.Create (transform.position, transform.rotation, angle, vertAngle, nearClip, range)) != null;
+            return (_frustum = CreateFrustum ()) != null;
         }
         #endregion
 

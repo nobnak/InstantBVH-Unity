@@ -70,6 +70,15 @@ namespace Recon.BoundingVolumes {
             return LocalBounds().EncapsulateInWorldBounds (Matrix4x4.TRS (head, axis, Vector3.one));
         }
 		public Matrix4x4 ModelMatrix() { return Matrix4x4.TRS (head, axis, Vector3.one); }
+
+        public void DrawFrustum(Matrix4x4 modelmat, Color color) {
+            Gizmos.color = color;
+            Gizmos.matrix = modelmat;
+            Gizmos.DrawFrustum (Vector3.zero, FoV (), FarPlane (), NearPlane (), Aspect ());
+            Gizmos.matrix = Matrix4x4.identity;
+        }
+        public void DrawFrustum(Color color) { DrawFrustum (ModelMatrix (), color); }
+
         public IConvexPolyhedron DrawGizmos() {
             var aabb = WorldBounds ();
 			var modelmat = ModelMatrix ();
@@ -86,10 +95,8 @@ namespace Recon.BoundingVolumes {
                 Gizmos.DrawSphere (v, 0.5f);
             #endif
             
-			Gizmos.matrix = modelmat;
-            Gizmos.DrawFrustum (Vector3.zero, FoV (), FarPlane (), NearPlane(), Aspect ());
+            DrawFrustum (modelmat, ConvexPolyhedronSettings.GizmoLineColor);
 
-            Gizmos.matrix = Matrix4x4.identity;
 
             return this;
         }

@@ -46,5 +46,22 @@ namespace Recon.BoundingVolumes {
             }
             return true;
         }
+
+        public static bool Contains(Vector3 axis, IEnumerable<Vector3> v0, Vector3 p) {
+            float s0, e0, se1;
+            RangeAlongAxis(axis, v0, out s0, out e0);
+            se1 = Vector3.Dot (axis, p);
+            return s0 <= se1 && se1 <= e0;
+        }
+        public static bool Contains(this IConvexPolyhedron a, Vector3 point) {
+            if (!a.WorldBounds ().Contains (point))
+                return false;
+
+            foreach (var ax in a.Normals())
+                if (ax.sqrMagnitude > E && !Contains (ax, a.Vertices (), point))
+                    return false;
+
+            return true;
+        }
     }
 }
