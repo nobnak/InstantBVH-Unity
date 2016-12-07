@@ -19,6 +19,7 @@ namespace Recon.VisibleArea {
         ConvexUpdator _convUp;
 
 		protected virtual void OnEnable () {
+            _convUp = null;
             Reconner.Add (this);
         }
 		protected virtual void OnDisable() {

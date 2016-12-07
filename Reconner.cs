@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Gist;
 using Recon.SpacePartition;
 using Recon.VisibleArea;
+using Recon.BoundingVolumes;
 
 namespace Recon {
     [ExecuteInEditMode]
@@ -50,6 +51,31 @@ namespace Recon {
         public static bool Remove(Volume vol) {
             return _database.Remove (vol) >= 0;
         }
+
+        #region Intersection
+        public static readonly System.Func<Volume, bool> Pass = v => true;
+        public static IEnumerable<Volume> Find(IConvexPolyhedron conv) { return Find(conv, Pass); }
+        public static IEnumerable<Volume> Find(IConvexPolyhedron conv, System.Func<Volume, bool> Filter) {
+            var r = Instance;
+            BVHController<Volume> bvh;
+            if (r == null || (bvh = r.BVH) == null)
+                yield break;
+            
+            var bb = conv.WorldBounds ();
+            foreach (var v in NarrowPhase(conv, Broadphase(bvh, bb)))
+                if (Filter(v))
+                    yield return v;                
+        }
+        public static IEnumerable<Volume> Broadphase(BVHController<Volume> bvh, Bounds bb) {
+            foreach (var v in bvh.Intersect(bb))
+                yield return v;
+        }
+        public static IEnumerable<Volume> NarrowPhase(IConvexPolyhedron conv, IEnumerable<Volume> broadphased) {
+            foreach (var v in broadphased)
+                if (v.GetConvexPolyhedron().Intersect(conv))
+                    yield return v;
+        }
+        #endregion
         #endregion
 
     }

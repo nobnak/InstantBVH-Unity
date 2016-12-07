@@ -32,7 +32,7 @@ namespace Recon {
         }
         void Update() {
             _insightVolumes.Clear ();
-            foreach (var v in NarrowPhase(Broadphase()))
+            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection))
                 _insightVolumes.Add (v);
             foreach (var v in _insightVolumes)
                 InSight.Invoke (v);            
@@ -43,13 +43,19 @@ namespace Recon {
             
             ConvUp.AssureUpdateConvex ();
             _frustum.DrawGizmos ();
-            foreach (var v in NarrowPhase(Broadphase()))
+            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection))
                 DrawInsight (v.GetBounds ().center);
         }
 
         public IList<Volume> InSightVolumes { get { return _insightVolumes; } }
         public Frustum CreateFrustum () {
             return Frustum.Create (transform.position, transform.rotation, angle, vertAngle, nearClip, range);
+        }        
+        public bool FilterSelfIntersection(Volume v) {
+            foreach (var w in _selfVolumes)
+                if (v == w)
+                    return false;
+            return true;
         }
 
         #region ConvexUpdator
@@ -78,34 +84,6 @@ namespace Recon {
         }
         public bool UpdateConvex () {
             return (_frustum = CreateFrustum ()) != null;
-        }
-        #endregion
-
-        #region Intersection
-        public bool SelfIntersection(Volume v) {
-            foreach (var w in _selfVolumes)
-                if (v == w)
-                    return true;
-            return false;
-        }
-        public Bounds WorldBounds() {
-            ConvUp.AssureUpdateConvex ();
-            return ConvUp.GetConvexPolyhedron ().WorldBounds ();
-        }
-        public IEnumerable<Volume> Broadphase() {
-            Reconner r;
-            BVHController<Volume> bvh;
-            if ((r = Reconner.Instance) == null || (bvh = r.BVH) == null)
-                yield break;
-
-            foreach (var v in bvh.Intersect(WorldBounds()))
-                yield return v;
-        }
-        public IEnumerable<Volume> NarrowPhase(IEnumerable<Volume> broadphased) {
-            var conv = GetConvexPolyhedron ();
-            foreach (var v in broadphased)
-                if (v.GetConvexPolyhedron().Intersect(conv) && !SelfIntersection(v))
-                    yield return v;
         }
         #endregion
     }
