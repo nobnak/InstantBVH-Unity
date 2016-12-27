@@ -16,6 +16,8 @@ namespace Recon.VisibleArea {
         
     [ExecuteInEditMode]
     public abstract class Volume : MonoBehaviour, IVolume, IConvex {
+        public int mask = -1;
+
         ConvexUpdator _convUp;
 
 		protected virtual void OnEnable () {

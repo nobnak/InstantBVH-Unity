@@ -11,9 +11,12 @@ using System.Linq;
 namespace Recon {
     [ExecuteInEditMode]
     public class Vision : MonoBehaviour, IConvex {
+        [Header("Filter")]
+        public int mask = -1;
+        [Header("Debug")]
         public Color colorInsight = new Color (0.654f, 1f, 1f);
         public Color colorSpot = new Color (1f, 0.65f, 1f);
-
+        [Header("Frustum")]
         public float range = 10f;
         public float nearClip = 1f;
         public float angle = 90f;
@@ -32,7 +35,7 @@ namespace Recon {
         }
         void Update() {
             _insightVolumes.Clear ();
-            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection))
+            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
                 _insightVolumes.Add (v);
             foreach (var v in _insightVolumes)
                 InSight.Invoke (v);            
@@ -43,7 +46,7 @@ namespace Recon {
             
             ConvUp.AssureUpdateConvex ();
             _frustum.DrawGizmos ();
-            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection))
+            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
                 DrawInsight (v.GetBounds ().center);
         }
 
@@ -56,6 +59,9 @@ namespace Recon {
                 if (v == w)
                     return false;
             return true;
+        }
+        public bool FilterMask(Volume v) {
+            return (v.mask & mask) != 0;
         }
 
         #region ConvexUpdator

@@ -54,17 +54,21 @@ namespace Recon {
 
         #region Intersection
         public static readonly System.Func<Volume, bool> Pass = v => true;
-        public static IEnumerable<Volume> Find(IConvexPolyhedron conv) { return Find(conv, Pass); }
-        public static IEnumerable<Volume> Find(IConvexPolyhedron conv, System.Func<Volume, bool> Filter) {
+        public static IEnumerable<Volume> Find(IConvexPolyhedron conv) { return Find(conv, Pass, Pass); }
+        public static IEnumerable<Volume> Find(IConvexPolyhedron conv, System.Func<Volume, bool> NarrowFilter) {
+            return Find(conv, NarrowFilter, Pass);
+        }
+        public static IEnumerable<Volume> Find(IConvexPolyhedron conv, 
+            System.Func<Volume, bool> NarrowFilter, System.Func<Volume, bool> BroadFilter) {
             var r = Instance;
             BVHController<Volume> bvh;
             if (r == null || (bvh = r.BVH) == null)
                 yield break;
             
             var bb = conv.WorldBounds ();
-            foreach (var v in NarrowPhase(conv, Broadphase(bvh, bb)))
-                if (Filter(v))
-                    yield return v;                
+            foreach (var v in Broadphase(bvh, bb))
+                if (BroadFilter (v) && v.GetConvexPolyhedron ().Intersect (conv) && NarrowFilter (v))
+                    yield return v;
         }
         public static IEnumerable<Volume> Broadphase(BVHController<Volume> bvh, Bounds bb) {
             foreach (var v in bvh.Intersect(bb))
