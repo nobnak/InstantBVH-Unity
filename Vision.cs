@@ -11,9 +11,12 @@ using System.Linq;
 namespace Recon {
     [ExecuteInEditMode]
     public class Vision : MonoBehaviour, IConvex {
+        [Header("Filter")]
+        public int mask = -1;
+        [Header("Debug")]
         public Color colorInsight = new Color (0.654f, 1f, 1f);
         public Color colorSpot = new Color (1f, 0.65f, 1f);
-
+        [Header("Frustum")]
         public float range = 10f;
         public float nearClip = 1f;
         public float angle = 90f;
@@ -32,7 +35,7 @@ namespace Recon {
         }
         void Update() {
             _insightVolumes.Clear ();
-            foreach (var v in NarrowPhase(Broadphase()))
+            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
                 _insightVolumes.Add (v);
             foreach (var v in _insightVolumes)
                 InSight.Invoke (v);            
@@ -43,11 +46,23 @@ namespace Recon {
             
             ConvUp.AssureUpdateConvex ();
             _frustum.DrawGizmos ();
-            foreach (var v in NarrowPhase(Broadphase()))
+            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
                 DrawInsight (v.GetBounds ().center);
         }
 
         public IList<Volume> InSightVolumes { get { return _insightVolumes; } }
+        public Frustum CreateFrustum () {
+            return Frustum.Create (transform.position, transform.rotation, angle, vertAngle, nearClip, range);
+        }        
+        public bool FilterSelfIntersection(Volume v) {
+            foreach (var w in _selfVolumes)
+                if (v == w)
+                    return false;
+            return true;
+        }
+        public bool FilterMask(Volume v) {
+            return (v.mask & mask) != 0;
+        }
 
         #region ConvexUpdator
         public ConvexUpdator ConvUp {
@@ -74,35 +89,7 @@ namespace Recon {
             return true;
         }
         public bool UpdateConvex () {
-            return (_frustum = Frustum.Create (transform.position, transform.rotation, angle, vertAngle, nearClip, range)) != null;
-        }
-        #endregion
-
-        #region Intersection
-        public bool SelfIntersection(Volume v) {
-            foreach (var w in _selfVolumes)
-                if (v == w)
-                    return true;
-            return false;
-        }
-        public Bounds WorldBounds() {
-            ConvUp.AssureUpdateConvex ();
-            return ConvUp.GetConvexPolyhedron ().WorldBounds ();
-        }
-        public IEnumerable<Volume> Broadphase() {
-            Reconner r;
-            BVHController<Volume> bvh;
-            if ((r = Reconner.Instance) == null || (bvh = r.BVH) == null)
-                yield break;
-
-            foreach (var v in bvh.Intersect(WorldBounds()))
-                yield return v;
-        }
-        public IEnumerable<Volume> NarrowPhase(IEnumerable<Volume> broadphased) {
-            var conv = GetConvexPolyhedron ();
-            foreach (var v in broadphased)
-                if (v.GetConvexPolyhedron().Intersect(conv) && !SelfIntersection(v))
-                    yield return v;
+            return (_frustum = CreateFrustum ()) != null;
         }
         #endregion
     }
