@@ -50,7 +50,9 @@ namespace Recon {
                 DrawInsight (v.GetBounds ().center);
         }
 
-        public IList<Volume> InSightVolumes { get { return _insightVolumes; } }
+		public bool IsInSight(Volume v) {
+			return _insightVolumes.Contains (v);
+		}
         public Frustum CreateFrustum () {
             return Frustum.Create (transform.position, transform.rotation, angle, vertAngle, nearClip, range);
         }        
