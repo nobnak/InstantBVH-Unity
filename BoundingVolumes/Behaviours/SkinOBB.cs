@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Recon.BoundingVolumes;
+using Recon.Extension;
 
 namespace Recon.BoundingVolumes.Behaviour {
     
@@ -40,8 +41,9 @@ namespace Recon.BoundingVolumes.Behaviour {
                 (_attachedSkinmesh = GetComponentInChildren<SkinnedMeshRenderer> ()) != null : true);
         }
         public override bool UpdateConvex () {
-            return (_obb = OBB.Create (_attachedSkinmesh.rootBone, _attachedSkinmesh.localBounds)) != null;
+            return (_obb = OBB.Create (_attachedSkinmesh.RootBone(), _attachedSkinmesh.localBounds)) != null;
         }
         #endregion
+
     }
 }

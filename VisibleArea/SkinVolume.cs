@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Recon.BoundingVolumes;
+using Recon.Extension;
 
 namespace Recon.VisibleArea {
 
@@ -17,7 +18,7 @@ namespace Recon.VisibleArea {
             return _skin != null || (_skin = GetComponentInChildren<SkinnedMeshRenderer> ()) != null;
         }
         public override bool UpdateConvex () {
-            return (_obb = OBB.Create (_skin.rootBone, _skin.localBounds)) != null;
+            return (_obb = OBB.Create (_skin.RootBone(), _skin.localBounds)) != null;
         }
         #endregion
     }
