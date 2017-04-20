@@ -72,9 +72,11 @@ namespace Recon.BoundingVolumes {
 		public Matrix4x4 ModelMatrix() { return Matrix4x4.TRS (head, axis, Vector3.one); }
 
         public void DrawFrustum(Matrix4x4 modelmat, Color color) {
+            var nearPlane = NearPlane ();
+
             Gizmos.color = color;
             Gizmos.matrix = modelmat;
-            Gizmos.DrawFrustum (Vector3.zero, FoV (), FarPlane (), NearPlane (), Aspect ());
+            Gizmos.DrawFrustum (new Vector3(0f, 0f, nearPlane), FoV (), FarPlane (), nearPlane, Aspect ());
             Gizmos.matrix = Matrix4x4.identity;
         }
         public void DrawFrustum(Color color) { DrawFrustum (ModelMatrix (), color); }
