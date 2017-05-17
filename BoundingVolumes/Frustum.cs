@@ -67,7 +67,7 @@ namespace Recon.BoundingVolumes {
                 new Vector3(-2f * farBottomLeft.x, -2f * farBottomLeft.y, farBottomLeft.z - nearBottomLeft.z));
         }
         public Bounds WorldBounds() {
-            return LocalBounds().EncapsulateInWorldBounds (Matrix4x4.TRS (head, axis, Vector3.one));
+            return LocalBounds().EncapsulateInTargetSpace (Matrix4x4.TRS (head, axis, Vector3.one));
         }
 		public Matrix4x4 ModelMatrix() { return Matrix4x4.TRS (head, axis, Vector3.one); }
 
