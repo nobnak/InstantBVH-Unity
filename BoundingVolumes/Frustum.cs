@@ -8,10 +8,12 @@ namespace Recon.BoundingVolumes {
     public class Frustum : IConvexPolyhedron {
         public const float MIN_NEAR_PLANE = 1e-6f;
 
-        public Vector3 head;
         public Vector3 farBottomLeft;
         public Vector3 nearBottomLeft;
-        public Quaternion axis;
+
+        public Matrix4x4 modelMatrix;
+        public Matrix4x4 modelITMatrix;
+        public Bounds worldBounds;
 
         public Frustum(Vector3 head, Vector3 farBottomLeft, Quaternion axis)
             : this(head, farBottomLeft, MIN_NEAR_PLANE, farBottomLeft.z, axis) {
@@ -19,10 +21,12 @@ namespace Recon.BoundingVolumes {
         public Frustum(Vector3 head, Vector3 farBottomLeft, float nearPlane, float farPlane, Quaternion axis) {
             farBottomLeft *= 1f / farBottomLeft.z;
 
-            this.head = head;
             this.farBottomLeft = farPlane * farBottomLeft;
             this.nearBottomLeft = nearPlane * farBottomLeft;
-            this.axis = axis;
+
+            this.modelMatrix = Matrix4x4.TRS (head, axis, Vector3.one);
+            this.modelITMatrix = modelMatrix.inverse.transpose;
+            this.worldBounds = Vertices ().Encapsulate ();
         }
 
         public float FoV() { return 2f * Mathf.Atan2 (farBottomLeft.y, farBottomLeft.z) * Mathf.Rad2Deg; }
@@ -33,33 +37,33 @@ namespace Recon.BoundingVolumes {
 
         #region IConvexPolyhedron implementation
         public IEnumerable<Vector3> Normals () {
-            yield return axis * Vector3.forward;
-            yield return axis * Vector3.back;
+            yield return modelITMatrix.MultiplyVector(Vector3.forward);
+            yield return modelITMatrix.MultiplyVector(Vector3.back);
 
-            yield return axis * new Vector3 (farBottomLeft.z, 0f, -farBottomLeft.x);
-            yield return axis * new Vector3 (farBottomLeft.z, 0f, farBottomLeft.x);
-            yield return axis * new Vector3 (0f, farBottomLeft.z, -farBottomLeft.y);
-            yield return axis * new Vector3 (0f, farBottomLeft.z, farBottomLeft.y);
+            yield return modelITMatrix.MultiplyVector (new Vector3 (farBottomLeft.z, 0f, -farBottomLeft.x));
+            yield return modelITMatrix.MultiplyVector (new Vector3 (farBottomLeft.z, 0f, farBottomLeft.x));
+            yield return modelITMatrix.MultiplyVector (new Vector3 (0f, farBottomLeft.z, -farBottomLeft.y));
+            yield return modelITMatrix.MultiplyVector (new Vector3 (0f, farBottomLeft.z, farBottomLeft.y));
         }
         public IEnumerable<Vector3> Edges() {
-            yield return axis * Vector3.right;
-            yield return axis * Vector3.up;
+            yield return modelMatrix.MultiplyVector (Vector3.right);
+            yield return modelMatrix.MultiplyVector (Vector3.up);
 
-            yield return axis * farBottomLeft;
-            yield return axis * new Vector3 (-farBottomLeft.x, farBottomLeft.y, farBottomLeft.z);
-            yield return axis * new Vector3 (farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z);
-            yield return axis * new Vector3 (-farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z);
+            yield return modelMatrix.MultiplyVector (farBottomLeft);
+            yield return modelMatrix.MultiplyVector (new Vector3 (-farBottomLeft.x, farBottomLeft.y, farBottomLeft.z));
+            yield return modelMatrix.MultiplyVector (new Vector3 (farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z));
+            yield return modelMatrix.MultiplyVector (new Vector3 (-farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z));
         }
         public IEnumerable<Vector3> Vertices () {
-            yield return head + axis * farBottomLeft;
-            yield return head + axis * new Vector3 (farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z);
-            yield return head + axis * new Vector3 (-farBottomLeft.x, farBottomLeft.y, farBottomLeft.z);
-            yield return head + axis * new Vector3 (-farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z);
+            yield return modelMatrix.MultiplyPoint3x4 (farBottomLeft);
+            yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z));
+            yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (-farBottomLeft.x, farBottomLeft.y, farBottomLeft.z));
+            yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (-farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z));
 
-            yield return head + axis * nearBottomLeft;
-            yield return head + axis * new Vector3 (nearBottomLeft.x, -nearBottomLeft.y, nearBottomLeft.z);
-            yield return head + axis * new Vector3 (-nearBottomLeft.x, nearBottomLeft.y, nearBottomLeft.z);
-            yield return head + axis * new Vector3 (-nearBottomLeft.x, -nearBottomLeft.y, nearBottomLeft.z);
+            yield return modelMatrix.MultiplyPoint3x4 (nearBottomLeft);
+            yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (nearBottomLeft.x, -nearBottomLeft.y, nearBottomLeft.z));
+            yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (-nearBottomLeft.x, nearBottomLeft.y, nearBottomLeft.z));
+            yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (-nearBottomLeft.x, -nearBottomLeft.y, nearBottomLeft.z));
         }
         public Bounds LocalBounds() {
             return new Bounds (
@@ -67,9 +71,11 @@ namespace Recon.BoundingVolumes {
                 new Vector3(-2f * farBottomLeft.x, -2f * farBottomLeft.y, farBottomLeft.z - nearBottomLeft.z));
         }
         public Bounds WorldBounds() {
-            return LocalBounds().EncapsulateInTargetSpace (Matrix4x4.TRS (head, axis, Vector3.one));
+            return worldBounds;
         }
-		public Matrix4x4 ModelMatrix() { return Matrix4x4.TRS (head, axis, Vector3.one); }
+        public Matrix4x4 ModelMatrix() {
+            return modelMatrix;
+        }
 
         public void DrawFrustum(Matrix4x4 modelmat, Color color) {
             var nearPlane = NearPlane ();
@@ -85,18 +91,12 @@ namespace Recon.BoundingVolumes {
             var aabb = WorldBounds ();
 			var modelmat = ModelMatrix ();
 
-			Gizmos.color = ConvexPolyhedronSettings.GizmoAABBColor;
             Gizmos.matrix = Matrix4x4.identity;
+
+            Gizmos.color = ConvexPolyhedronSettings.GizmoAABBColor;
             Gizmos.DrawWireCube (aabb.center, aabb.size);
 
-            Gizmos.color = ConvexPolyhedronSettings.GizmoLineColor;
-
-            #if false
-			Gizmos.matrix = Matrix4x4.identity;
-            foreach (var v in Vertices())
-                Gizmos.DrawSphere (v, 0.5f);
-            #endif
-            
+            Gizmos.color = ConvexPolyhedronSettings.GizmoLineColor;            
             DrawFrustum (modelmat, ConvexPolyhedronSettings.GizmoLineColor);
 
 
