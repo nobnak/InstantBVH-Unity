@@ -6,61 +6,66 @@ using System.Collections.Generic;
 namespace Recon.BoundingVolumes {
 
     public class OBB : IConvexPolyhedron {
-        public Vector3 center;
-        public Vector3 size;
-        public Quaternion axis;
+        public Bounds localBounds;
+        public Matrix4x4 modelMatrix;
+        public Matrix4x4 modelITMatrix;
 
-        public OBB(Vector3 center, Vector3 size, Quaternion axis) {
-            this.center = center;
-            this.size = size;
-            this.axis = axis;
+        public OBB(Bounds localBounds, Matrix4x4 modelMatrix) {
+            this.localBounds = localBounds;
+            this.modelMatrix = modelMatrix;
+            this.modelITMatrix = modelMatrix.inverse.transpose;
         }
 
         public Matrix4x4 ModelMatrix() {
-            return Matrix4x4.TRS (center, axis, size);
+            return modelMatrix;
         }
         #region IConvexPolyhedron implementation
         public IEnumerable<Vector3> Normals () {
-            yield return axis * Vector3.right;
-            yield return axis * Vector3.up;
-            yield return axis * Vector3.forward;
+            yield return modelITMatrix.MultiplyVector(Vector3.right);
+            yield return modelITMatrix.MultiplyVector (Vector3.up);
+            yield return modelITMatrix.MultiplyVector (Vector3.forward);
         }
         public IEnumerable<Vector3> Edges() {
             return Normals ();
         }
         public IEnumerable<Vector3> Vertices () {
-            var x = 0.5f * size.x * (axis * Vector3.right);
-            var y = 0.5f * size.y * (axis * Vector3.up);
-            var z = 0.5f * size.z * (axis * Vector3.forward);
+            var extent = localBounds.extents;
+            var center = modelMatrix.MultiplyPoint (localBounds.center);
+            var x = modelMatrix.MultiplyVector(new Vector3(extent.x, 0f, 0f));
+            var y = modelMatrix.MultiplyVector (new Vector3 (0f, extent.y, 0f));
+            var z = modelMatrix.MultiplyVector(new Vector3(0f, 0f, extent.z));
 
             for (var i = 0; i < 8; i++)
                 yield return center + ((i & 1) != 0 ? x : -x) + ((i & 2) != 0 ? y : -y) + ((i & 4) != 0 ? z : -z);
         }
         public Bounds LocalBounds() {
-            return new Bounds (Vector3.zero, size);
+            return localBounds;
         }
         public Bounds WorldBounds() {
-            return LocalBounds().EncapsulateInWorldBounds(Matrix4x4.TRS(center, axis, Vector3.one));
+            return localBounds.EncapsulateInTargetSpace (modelMatrix);
         }
         public IConvexPolyhedron DrawGizmos() {
             var aabb = WorldBounds ();
-			var modelmat = ModelMatrix ();
 
-			Gizmos.color = ConvexPolyhedronSettings.GizmoAABBColor;
             Gizmos.matrix = Matrix4x4.identity;
+
+            Gizmos.color = ConvexPolyhedronSettings.GizmoAABBColor;
             Gizmos.DrawWireCube (aabb.center, aabb.size);
 
-			Gizmos.color = ConvexPolyhedronSettings.GizmoSurfaceColor;
-			Gizmos.matrix = modelmat;
-			Gizmos.DrawCube (Vector3.zero, Vector3.one);
-
 			Gizmos.color = ConvexPolyhedronSettings.GizmoLineColor;
-			Gizmos.matrix = Matrix4x4.identity;
             foreach (var v in Vertices())
                 Gizmos.DrawSphere (v, ConvexPolyhedronSettings.GizmoVertexSize);
 
-			Gizmos.matrix = modelmat;
-            Gizmos.DrawWireCube (Vector3.zero, Vector3.one);
+            var max = aabb.max;
+            var normalLength = 1f;
+            Gizmos.color = Color.red;
+            foreach (var n in Normals())
+                Gizmos.DrawLine(max, max + normalLength * n.normalized);
+
+            Gizmos.matrix = modelMatrix;
+
+            Gizmos.color = ConvexPolyhedronSettings.GizmoLineColor;
+            Gizmos.DrawWireCube (localBounds.center, localBounds.size);
 
             Gizmos.matrix = Matrix4x4.identity;
 
@@ -70,10 +75,7 @@ namespace Recon.BoundingVolumes {
 
         #region Static
         public static OBB Create(Transform tr, Bounds localBounds) {
-            return new OBB (
-                tr.TransformPoint (localBounds.center),
-                Vector3.Scale (tr.lossyScale, localBounds.size),
-                tr.rotation);
+            return new OBB (localBounds, tr.localToWorldMatrix);
         }
         #endregion
     }

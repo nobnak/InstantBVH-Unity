@@ -6,8 +6,6 @@ using Recon.Extension;
 namespace Recon.BoundingVolumes.Behaviour {
     
     public class SkinOBB : ConvexBuilder {
-        public Color color = Color.white;
-
         ConvexUpdator _convUp;
         SkinnedMeshRenderer _attachedSkinmesh;
         OBB _obb;
@@ -17,9 +15,7 @@ namespace Recon.BoundingVolumes.Behaviour {
                 return;
 
             ConvUp.AssureUpdateConvex ();
-            Gizmos.color = color;
             _obb.DrawGizmos ();
-
         }
 
         public ConvexUpdator ConvUp {
