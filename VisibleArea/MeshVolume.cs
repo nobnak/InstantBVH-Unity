@@ -5,19 +5,21 @@ using Recon.BoundingVolumes;
 namespace Recon.VisibleArea {
 
     public class MeshVolume : Volume {
-		MeshFilter _mfilter;
-        OBB _obb;
+        MeshFilter _attachedMFilter;
 
-        #region implemented abstract members of Volume
-        public override IConvexPolyhedron GetConvexPolyhedron () {
-            ConvUp.AssureUpdateConvex ();
-            return _obb;
-        }
+        #region implemented abstract members of IConvex
         public override bool StartConvex () {
-			return _mfilter != null || (_mfilter = GetComponentInChildren<MeshFilter> ()) != null;
+            return (_attachedMFilter == null ? 
+                (_attachedMFilter = GetComponent<MeshFilter> ()) != null : true);
         }
-        public override bool UpdateConvex () {
-			return (_obb = OBB.Create (_mfilter.transform, _mfilter.sharedMesh.bounds)) != null;
+        #endregion
+
+        #region implemented abstract members of AbstractMeshOBB
+        protected override Transform RootTransform () {
+            return _attachedMFilter.transform;
+        }
+        protected override Bounds LocalBounds () {
+            return _attachedMFilter.sharedMesh.bounds;
         }
         #endregion
     }

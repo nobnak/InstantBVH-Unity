@@ -7,13 +7,18 @@ namespace Recon.BoundingVolumes {
 
     public class OBB : IConvexPolyhedron {
         public Bounds localBounds;
+        public Bounds worldBounds;
+
         public Matrix4x4 modelMatrix;
         public Matrix4x4 modelITMatrix;
 
         public OBB(Bounds localBounds, Matrix4x4 modelMatrix) {
             this.localBounds = localBounds;
+
             this.modelMatrix = modelMatrix;
             this.modelITMatrix = modelMatrix.inverse.transpose;
+
+            this.worldBounds = localBounds.EncapsulateInTargetSpace (modelMatrix);
         }
 
         public Matrix4x4 ModelMatrix() {
@@ -42,7 +47,7 @@ namespace Recon.BoundingVolumes {
             return localBounds;
         }
         public Bounds WorldBounds() {
-            return localBounds.EncapsulateInTargetSpace (modelMatrix);
+            return worldBounds;
         }
         public IConvexPolyhedron DrawGizmos() {
             var aabb = WorldBounds ();

@@ -15,11 +15,10 @@ namespace Recon.VisibleArea {
     #endregion
         
     [ExecuteInEditMode]
-    public abstract class Volume : MonoBehaviour, IVolume, IConvex {
+    public abstract class Volume : AbstractMeshOBB, IVolume {
         public int mask = -1;
 
-        ConvexUpdator _convUp;
-
+        #region Unity
 		protected virtual void OnEnable () {
             _convUp = null;
             Reconner.Add (this);
@@ -27,23 +26,6 @@ namespace Recon.VisibleArea {
 		protected virtual void OnDisable() {
             Reconner.Remove (this);
         }
-        protected virtual void OnDrawGizmos() {
-            IConvexPolyhedron conv;
-            if (!isActiveAndEnabled || (conv = GetConvexPolyhedron()) == null)
-                return;
-            conv.DrawGizmos ();
-        }
-
-        #region ConvexUpdator
-        public ConvexUpdator ConvUp {
-            get { return _convUp == null ? (_convUp = new ConvexUpdator (this)) : _convUp; }
-        }
-        #endregion
-
-        #region IConvex implementation
-        public abstract IConvexPolyhedron GetConvexPolyhedron ();
-        public abstract bool StartConvex ();
-        public abstract bool UpdateConvex ();
         #endregion
 
         #region IVolume implementation

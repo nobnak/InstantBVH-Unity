@@ -6,19 +6,21 @@ using Recon.Extension;
 namespace Recon.VisibleArea {
 
     public class SkinVolume : Volume {
-        SkinnedMeshRenderer _skin;
-        OBB _obb;
+        SkinnedMeshRenderer _attachedSkinmesh;
 
-        #region implemented abstract members of Volume
-        public override IConvexPolyhedron GetConvexPolyhedron () {
-            ConvUp.AssureUpdateConvex ();
-            return _obb;
-        }
+        #region implemented abstract members of IConvex
         public override bool StartConvex () {
-            return _skin != null || (_skin = GetComponentInChildren<SkinnedMeshRenderer> ()) != null;
+            return (_attachedSkinmesh == null ? 
+                (_attachedSkinmesh = GetComponentInChildren<SkinnedMeshRenderer> ()) != null : true);
         }
-        public override bool UpdateConvex () {
-            return (_obb = OBB.Create (_skin.RootBone(), _skin.localBounds)) != null;
+        #endregion
+
+        #region implemented abstract members of AbstractMeshOBB
+        protected override Transform RootTransform () {
+            return _attachedSkinmesh.rootBone;
+        }
+        protected override Bounds LocalBounds () {
+            return _attachedSkinmesh.localBounds;
         }
         #endregion
     }
