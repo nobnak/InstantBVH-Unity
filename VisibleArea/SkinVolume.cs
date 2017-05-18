@@ -17,7 +17,8 @@ namespace Recon.VisibleArea {
 
         #region implemented abstract members of AbstractMeshOBB
         protected override Transform RootTransform () {
-            return _attachedSkinmesh.rootBone;
+            var rootBone = _attachedSkinmesh.rootBone;
+            return (rootBone == null ? _attachedSkinmesh.transform : rootBone);
         }
         protected override Bounds LocalBounds () {
             return _attachedSkinmesh.localBounds;
