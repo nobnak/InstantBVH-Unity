@@ -20,7 +20,7 @@ namespace Recon {
                 vals [i] = new Value (){ id = i };
             }
 
-            var bvh = new BVHController<Value> ();
+            var bvh = new MortonBVHController<Value> ();
             bvh.Build (bounds, vals);
 
             var nodeCount = bvh.Count ();

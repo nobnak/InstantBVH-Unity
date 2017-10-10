@@ -23,9 +23,9 @@ namespace Recon {
         }
 
 		public Color gizmoColorBounds = Color.green;
-        public BVHController<Volume> BVH { get { return Reconner._bvh; } }
+        public BaseBVHController<Volume> BVH { get { return Reconner._bvh; } }
 
-        public BVHController<Volume> RebuildBVH () {
+        public BaseBVHController<Volume> RebuildBVH () {
             Reconner._bounds.Clear ();
             var vals = Reconner._database.GetList ();
             for (var i = 0; i < vals.Count; i++)
@@ -35,12 +35,12 @@ namespace Recon {
 
         #region Static
 		static Dataset<Volume> _database;
-		static BVHController<Volume> _bvh;
+		static BaseBVHController<Volume> _bvh;
 		static List<Bounds> _bounds;
 
 		static Reconner() {
 			_database = new Dataset<Volume> ();
-			_bvh = new BVHController<Volume> ();
+			_bvh = new MortonBVHController<Volume> ();
 			_bounds = new List<Bounds> ();
 		}
 
@@ -61,7 +61,7 @@ namespace Recon {
         public static IEnumerable<Volume> Find(IConvexPolyhedron conv, 
             System.Func<Volume, bool> NarrowFilter, System.Func<Volume, bool> BroadFilter) {
             var r = Instance;
-            BVHController<Volume> bvh;
+            BaseBVHController<Volume> bvh;
             if (r == null || (bvh = r.BVH) == null)
                 yield break;
             
@@ -70,7 +70,7 @@ namespace Recon {
                 if (BroadFilter (v) && v.GetConvexPolyhedron ().Intersect (conv) && NarrowFilter (v))
                     yield return v;
         }
-        public static IEnumerable<Volume> Broadphase(BVHController<Volume> bvh, Bounds bb) {
+        public static IEnumerable<Volume> Broadphase(BaseBVHController<Volume> bvh, Bounds bb) {
             foreach (var v in bvh.Intersect(bb))
                 yield return v;
         }
