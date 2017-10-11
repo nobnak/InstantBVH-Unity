@@ -37,6 +37,8 @@ namespace Recon.SpacePartition {
                 indices.Add(i);
 
             _root = Build(Bous, indices, 0, indices.Count, sah, _pool);
+            if (_root != null)
+                _root.Build(new IndexedList<Bounds>(indices, Bous), new IndexedList<Value>(indices, Vals));
 
             return this;
         }
