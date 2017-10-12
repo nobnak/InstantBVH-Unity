@@ -7,20 +7,24 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Gist.BoundingVolume;
+using Gist.Scoped;
 
 namespace Recon.SpacePartition {
 
     public class BinnedSAHBVHController<Value> : BaseBVHController<Value> where Value : class {
         public const int K = 8;
 
-        protected IMemoryPool<AABB> pool;
+        protected IMemoryPool<AABB> boundsPool;
         protected List<int> indices;
         protected BinnedSAH sah;
 
+        protected List<AABB> objectBounds;
+
         public BinnedSAHBVHController() {
-            this.pool = AABB.CreateAABBPool();
+            this.boundsPool = AABB.CreateAABBPool();
             this.indices = new List<int>();
-            this.sah = new BinnedSAH(pool);
+            this.sah = new BinnedSAH(boundsPool);
+            this.objectBounds = new List<AABB>();
         }
 
         public override BaseBVHController<Value> Clear() {
@@ -29,21 +33,25 @@ namespace Recon.SpacePartition {
             return this;
         }
 
-        public override BaseBVHController<Value> Build(IList<Bounds> Bous, IList<Value> Vals) {
+        public override BaseBVHController<Value> Build(IList<Bounds> bounds, IList<Value> dataset) {
             Clear ();
 
             sah.Clear();
-            for (var i = 0; i < Bous.Count; i++)
+            for (var i = 0; i < bounds.Count; i++)
                 indices.Add(i);
 
-            _root = Build(Bous, indices, 0, indices.Count, sah, _pool);
-            if (_root != null)
-                _root.Build(new IndexedList<Bounds>(indices, Bous), new IndexedList<Value>(indices, Vals));
+            using (new ScopedPlug<List<AABB>>(objectBounds, obs => MemoryPoolUtil.Free(obs, boundsPool))) {
+                foreach (var b in bounds)
+                    objectBounds.Add(b);
+
+                if ((_root = Build(objectBounds, indices, 0, indices.Count, sah, _pool)) != null)
+                    _root.Build(new IndexedList<Bounds>(indices, bounds), new IndexedList<Value>(indices, dataset));
+            }
 
             return this;
         }
 
-        public static BVH<Value> Build(IList<Bounds> bounds, IList<int> indices, int offset, int length, 
+        public static BVH<Value> Build(IList<AABB> bounds, IList<int> indices, int offset, int length, 
             BinnedSAH sah, IMemoryPool<BVH<Value>> alloc) {
             if (length <= 0)
                 return null;
