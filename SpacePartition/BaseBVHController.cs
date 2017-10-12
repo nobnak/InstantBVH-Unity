@@ -13,7 +13,8 @@ namespace Recon.SpacePartition {
         public BVH<Value> Root { get { return _root; } }
 
         protected BVH<Value> _root;
-        protected MemoryPool<BVH<Value>> _pool = new MemoryPool<BVH<Value>> ();
+        protected MemoryPool<BVH<Value>> _pool = new MemoryPool<BVH<Value>> (
+            ()=>new BVH<Value>(), (v)=>v.Clear(), (v)=> { });
 
         public virtual BaseBVHController<Value> Clear() {
             BVH<Value>.Clear (_root, _pool);

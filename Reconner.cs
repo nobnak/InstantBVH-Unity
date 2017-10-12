@@ -40,8 +40,8 @@ namespace Recon {
 
 		static Reconner() {
 			_database = new Dataset<Volume> ();
-			_bvh = new MortonBVHController<Volume> ();
-			_bounds = new List<Bounds> ();
+            _bvh = new BinnedSAHBVHController<Volume>();
+            _bounds = new List<Bounds> ();
 		}
 
         public static Reconner Instance { get; protected set; }
@@ -52,7 +52,7 @@ namespace Recon {
             return _database.Remove (vol) >= 0;
         }
 
-        #region Intersection
+#region Intersection
         public static readonly System.Func<Volume, bool> Pass = v => true;
         public static IEnumerable<Volume> Find(IConvexPolyhedron conv) { return Find(conv, Pass, Pass); }
         public static IEnumerable<Volume> Find(IConvexPolyhedron conv, System.Func<Volume, bool> NarrowFilter) {
@@ -79,8 +79,8 @@ namespace Recon {
                 if (v.GetConvexPolyhedron().Intersect(conv))
                     yield return v;
         }
-        #endregion
-        #endregion
+#endregion
+#endregion
 
     }
 }

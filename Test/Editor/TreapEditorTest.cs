@@ -11,7 +11,7 @@ namespace Recon.Treap {
     	[Test]
         public void EditorTest() {
             Treap<int> root = null;
-            var alloc = new MemoryPool<Treap<int>> ();
+            var alloc = new MemoryPool<Treap<int>> (()=>new Treap<int>(),(v)=>v.Clear(), (v)=> { });
 
             var n = 4;
             var numbers = new int[n];

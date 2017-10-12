@@ -8,7 +8,8 @@ namespace Recon.Treap {
         public Treap<Value> Root { get { return _root; } }
 
         Treap<Value> _root;
-        MemoryPool<Treap<Value>> _pool = new MemoryPool<Treap<Value>>();
+        MemoryPool<Treap<Value>> _pool = new MemoryPool<Treap<Value>>(
+            ()=>new Treap<Value>(), (v)=>v.Clear(), (v)=> { });
 
         #region ITreapController implementation
         public bool TryGet (ulong key, out Treap<Value> n) {

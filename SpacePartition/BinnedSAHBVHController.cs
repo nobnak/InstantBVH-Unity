@@ -56,11 +56,9 @@ namespace Recon.SpacePartition {
             if (length <= 0)
                 return null;
 
-            if (length <= 2)
-                return alloc.New().Reset(offset, length);
-
             int countFromLeft;
-            sah.Build(bounds, indices, offset, length, out countFromLeft);
+            if (length <= 2 || !sah.Build(bounds, indices, offset, length, out countFromLeft))
+                return alloc.New().Reset(offset, length);
 
             var l = Build(bounds, indices, offset, countFromLeft, sah, alloc);
             var r = Build(bounds, indices, offset + countFromLeft, length - countFromLeft, sah, alloc);

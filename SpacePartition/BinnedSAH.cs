@@ -4,6 +4,7 @@ using Gist.BoundingVolume;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Recon.SpacePartition {
 
@@ -22,32 +23,34 @@ namespace Recon.SpacePartition {
 
         protected IMemoryPool<AABB> aabbPool;
 
-        public BinnedSAH(int binCount, IMemoryPool<AABB> aabbPool = null) {
-            this.aabbPool = (aabbPool == null ? AABB.CreateAABBPool() : aabbPool);
+        public BinnedSAH(int binCount, IMemoryPool<AABB> aabbPool) {
+            this.aabbPool = aabbPool;
             Reset(binCount);
         }
-        public BinnedSAH(IMemoryPool<AABB> aabbPool = null) : this(DEFAULT_K, aabbPool) { }
+        public BinnedSAH(IMemoryPool<AABB> aabbPool) : this(DEFAULT_K, aabbPool) { }
 
-        public void Build(IList<AABB> objectBounds, IList<int> indices, int offset, int length, out int countFromLeft) {
+        public bool Build(IList<AABB> objectBounds, IList<int> indices, int offset, int length, out int countFromLeft) {
             Clear();
             cleared = false;
 
             var world = aabbPool.New();
-            for (var i = 0; i < length; i++) {
-                var j = indices[i + offset];
+            foreach (var j in Enumerable.Range(offset, length).Select(i => indices[i])) { 
                 var ob = objectBounds[j];
-                world.Encapsulate(ob);
+                world.Encapsulate(ob.Center);
             }
 
             var size = world.Size;
             var longestAxis = (size.x > size.z ? (size.x > size.y ? 0 : 1) : (size.y > size.z ? 1 : 2));
             var longest = size[longestAxis];
             var worldMin = world.Min[longestAxis];
+            if (longest < 1e-4f) {
+                countFromLeft = -1;
+                return false;
+            }
 
             var invLongest = 1f / longest;
-            for (var i = 0; i < length; i++) {
-                var j = indices[i + offset];
-                var ob = objectBounds[i];
+            foreach (var j in Enumerable.Range(offset, length).Select(i => indices[i])) { 
+                var ob = objectBounds[j];
                 var c = ob.Center;
                 var k = (int)(binCount * (c[longestAxis] - worldMin) * invLongest * SMALLER_THAN_ONE);
                 bins[k].Add(j);
@@ -90,7 +93,11 @@ namespace Recon.SpacePartition {
                 foreach (var i in bin)
                     indices[offsetOfIndices++] = i;
 
-            Debug.LogFormat("Best SAH : Best index={0} cost={1}, Split index={2}", bestIndex, bestCost, countFromLeft);
+            aabbPool.Free(world);
+            aabbPool.Free(leftBounds);
+            aabbPool.Free(rightBounds);
+
+            return true;
         }
 
         public void Reset(int nextBinCount) {
@@ -100,7 +107,8 @@ namespace Recon.SpacePartition {
             binCount = nextBinCount;
             cleared = false;
 
-            MemoryPoolUtil.Free(bbs, aabbPool);
+            if (bbs != null)
+                MemoryPoolUtil.Free(bbs, aabbPool);
             System.Array.Resize(ref bbs, nextBinCount);
             for (var i = 0; i < bbs.Length; i++)
                 bbs[i] = aabbPool.New();
