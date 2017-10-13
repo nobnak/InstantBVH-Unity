@@ -10,6 +10,7 @@
 ### Git Submodule
 ###### Use this as a submodule
 ```
+git submodule add https://github.com/nobnak/Gist.git Assets/Packages/Gist
 git submodule add https://github.com/nobnak/Recon.git Assets/Packages/Recon
 ```
 
