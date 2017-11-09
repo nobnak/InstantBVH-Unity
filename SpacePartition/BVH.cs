@@ -1,14 +1,14 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using Recon.Treap;
-using System.Linq;
-using Gist;
+﻿using Gist;
 using Gist.Extensions.AABB;
 using Gist.Extensions.Range;
+using Gist.Pooling;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Recon.SpacePartition {
-    
-	public class BVH<Value> where Value : class {
+
+    public class BVH<Value> where Value : class {
 
         public readonly BVH<Value>[] ch = new BVH<Value>[2];
         public readonly LinkedList<Value> Values = new LinkedList<Value>();
