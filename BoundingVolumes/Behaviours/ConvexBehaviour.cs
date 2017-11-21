@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Gist.Intersection;
 
 namespace Recon.BoundingVolumes.Behaviour {
     public interface IConvex {
-        IConvexPolyhedron GetConvexPolyhedron();
+        IConvex3Polytope GetConvexPolyhedron();
         bool StartConvex();
         bool UpdateConvex();
     }
 
     public abstract class ConvexBuilder : MonoBehaviour, IConvex {
-        public abstract IConvexPolyhedron GetConvexPolyhedron();
+        public abstract IConvex3Polytope GetConvexPolyhedron();
         public abstract bool StartConvex();
         public abstract bool UpdateConvex();
     }
@@ -23,7 +24,7 @@ namespace Recon.BoundingVolumes.Behaviour {
             this.Convex = conv;
         }
 
-        public IConvexPolyhedron GetConvexPolyhedron() { return Convex.GetConvexPolyhedron(); }
+        public IConvex3Polytope GetConvexPolyhedron() { return Convex.GetConvexPolyhedron(); }
         public bool StartConvex() { return Convex.StartConvex(); }
         public bool UpdateConvex() { return Convex.UpdateConvex(); }
 

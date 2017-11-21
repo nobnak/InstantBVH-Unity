@@ -7,6 +7,7 @@ using Recon.VisibleArea;
 using Recon.BoundingVolumes.Behaviour;
 using Recon.BoundingVolumes;
 using System.Linq;
+using Gist.Intersection;
 
 namespace Recon {
     [ExecuteInEditMode]
@@ -80,7 +81,7 @@ namespace Recon {
         #endregion
 
         #region IConvex implementation
-        public IConvexPolyhedron GetConvexPolyhedron () {
+        public IConvex3Polytope GetConvexPolyhedron () {
             ConvUp.AssureUpdateConvex ();
             return _frustum;
         }

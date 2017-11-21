@@ -1,5 +1,5 @@
 ﻿using Gist;
-using Gist.BoundingVolume;
+using Gist.Intersection;
 using Gist.Pooling;
 using Gist.Scoped;
 using System.Collections.Generic;
@@ -10,17 +10,17 @@ namespace Recon.SpacePartition {
     public class BinnedSAHBVHController<Value> : BaseBVHController<Value> where Value : class {
         public const int K = 8;
 
-        protected IMemoryPool<AABB> boundsPool;
+        protected IMemoryPool<AABB3> boundsPool;
         protected List<int> indices;
         protected BinnedSAH sah;
 
-        protected List<AABB> objectBounds;
+        protected List<AABB3> objectBounds;
 
         public BinnedSAHBVHController() {
-            this.boundsPool = AABB.CreateAABBPool();
+            this.boundsPool = AABB3.CreateAABBPool();
             this.indices = new List<int>();
             this.sah = new BinnedSAH(boundsPool);
-            this.objectBounds = new List<AABB>();
+            this.objectBounds = new List<AABB3>();
         }
 
         public override BaseBVHController<Value> Clear() {
@@ -36,7 +36,7 @@ namespace Recon.SpacePartition {
             for (var i = 0; i < bounds.Count; i++)
                 indices.Add(i);
 
-            using (new ScopedPlug<List<AABB>>(objectBounds, obs => MemoryPoolUtil.Free(obs, boundsPool))) {
+            using (new ScopedPlug<List<AABB3>>(objectBounds, obs => MemoryPoolUtil.Free(obs, boundsPool))) {
                 foreach (var b in bounds)
                     objectBounds.Add(b);
 
@@ -47,7 +47,7 @@ namespace Recon.SpacePartition {
             return this;
         }
 
-        public static BVH<Value> Build(IList<AABB> bounds, IList<int> indices, int offset, int length, 
+        public static BVH<Value> Build(IList<AABB3> bounds, IList<int> indices, int offset, int length, 
             BinnedSAH sah, IMemoryPool<BVH<Value>> alloc) {
             if (length <= 0)
                 return null;

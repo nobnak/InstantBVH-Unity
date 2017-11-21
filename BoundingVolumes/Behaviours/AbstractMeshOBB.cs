@@ -3,6 +3,7 @@ using System.Collections;
 using Recon.BoundingVolumes;
 using Recon.Extension;
 using Gist.Extensions.AABB;
+using Gist.Intersection;
 
 namespace Recon.BoundingVolumes.Behaviour {
     
@@ -13,7 +14,7 @@ namespace Recon.BoundingVolumes.Behaviour {
         protected CoordinatesEnum targetCoordinates;
 
         protected ConvexUpdator _convUp;
-        protected OBB _obb;
+        protected OBB3 _obb;
 
         #region Abstract
         protected abstract Transform RootTransform();
@@ -31,7 +32,7 @@ namespace Recon.BoundingVolumes.Behaviour {
         #endregion
 
         #region implemented abstract members of IConvex
-        public override IConvexPolyhedron GetConvexPolyhedron () {
+        public override IConvex3Polytope GetConvexPolyhedron () {
             ConvUp.AssureUpdateConvex ();
             return _obb;
         }
@@ -44,19 +45,19 @@ namespace Recon.BoundingVolumes.Behaviour {
             get { return (_convUp == null ? (_convUp = new ConvexUpdator (this)) : _convUp); }
         }
 
-        OBB CreateOBB() {
+        OBB3 CreateOBB() {
             var rootBone = RootTransform();
             var localBounds = LocalBounds();
 
             switch (targetCoordinates) {
             case CoordinatesEnum.World:
-                return new OBB (rootBone.EncapsulateInWorldSpace (localBounds), Matrix4x4.identity);
+                return new OBB3 (rootBone.EncapsulateInWorldSpace (localBounds), Matrix4x4.identity);
             case CoordinatesEnum.Self:
                 var rootToSelfMatrix = transform.worldToLocalMatrix * rootBone.localToWorldMatrix;
-                return new OBB (localBounds.EncapsulateInTargetSpace (rootToSelfMatrix), 
+                return new OBB3 (localBounds.EncapsulateInTargetSpace (rootToSelfMatrix), 
                     transform.localToWorldMatrix);
             default:
-                return OBB.Create (rootBone, localBounds);
+                return OBB3.Create (rootBone, localBounds);
             }
         }
     }

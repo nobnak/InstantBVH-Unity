@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Recon.BoundingVolumes;
+using Gist.Intersection;
 
 namespace Recon.BoundingVolumes.Behaviour {
     [RequireComponent(typeof(Camera))]
@@ -28,7 +29,7 @@ namespace Recon.BoundingVolumes.Behaviour {
         }
 
         #region implemented abstract members of IConvex
-        public override IConvexPolyhedron GetConvexPolyhedron () {
+        public override IConvex3Polytope GetConvexPolyhedron () {
             ConvUp.AssureUpdateConvex ();
             return _frustum;
         }

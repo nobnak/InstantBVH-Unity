@@ -1,4 +1,4 @@
-﻿using Gist.BoundingVolume;
+﻿using Gist.Intersection;
 using Gist.Pooling;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace Recon.SpacePartition {
         public const int DEFAULT_K = 8;
 
         protected int binCount = 0;
-        protected AABB[] bbs;
+        protected AABB3[] bbs;
         protected List<int>[] bins;
 
         protected float[] lefts;
@@ -18,15 +18,15 @@ namespace Recon.SpacePartition {
 
         protected bool cleared;
 
-        protected IMemoryPool<AABB> aabbPool;
+        protected IMemoryPool<AABB3> aabbPool;
 
-        public BinnedSAH(int binCount, IMemoryPool<AABB> aabbPool) {
+        public BinnedSAH(int binCount, IMemoryPool<AABB3> aabbPool) {
             this.aabbPool = aabbPool;
             Reset(binCount);
         }
-        public BinnedSAH(IMemoryPool<AABB> aabbPool) : this(DEFAULT_K, aabbPool) { }
+        public BinnedSAH(IMemoryPool<AABB3> aabbPool) : this(DEFAULT_K, aabbPool) { }
 
-        public bool Build(IList<AABB> objectBounds, IList<int> indices, int offset, int length, out int countFromLeft) {
+        public bool Build(IList<AABB3> objectBounds, IList<int> indices, int offset, int length, out int countFromLeft) {
             Clear();
             cleared = false;
 

@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using Gist.Extensions.AABB;
+using Gist.Intersection;
 
 namespace Recon.BoundingVolumes {
         
-    public class Frustum : IConvexPolyhedron {
+    public class Frustum : IConvex3Polytope {
         public const float MIN_NEAR_PLANE = 1e-6f;
 
         public Vector3 farBottomLeft;
@@ -87,7 +88,7 @@ namespace Recon.BoundingVolumes {
         }
         public void DrawFrustum(Color color) { DrawFrustum (ModelMatrix (), color); }
 
-        public IConvexPolyhedron DrawGizmos() {
+        public IConvex3Polytope DrawGizmos() {
             var aabb = WorldBounds ();
 			var modelmat = ModelMatrix ();
 

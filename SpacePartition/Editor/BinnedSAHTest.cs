@@ -1,29 +1,26 @@
-﻿using UnityEngine;
-using UnityEditor;
-using UnityEngine.TestTools;
+﻿using Gist.Intersection;
 using NUnit.Framework;
-using System.Collections;
-using System.Collections.Generic;
-using Gist.BoundingVolume;
 using Recon.SpacePartition;
+using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 public class BinnedSAHTest {
 
 	[Test]
 	public void BinnedSAHTestSimplePasses() {
 
-        var bounds = new List<AABB>();
+        var bounds = new List<AABB3>();
         var indices = new List<int>();
 
         for (var i = 0; i < 4; i++) {
-            var bb = (AABB)new Bounds(new Vector3(((i % 2) == 0 ? 1f : -1f) * (i + 1f), 0f, 0f), Vector3.one);
+            var bb = (AABB3)new Bounds(new Vector3(((i % 2) == 0 ? 1f : -1f) * (i + 1f), 0f, 0f), Vector3.one);
             bounds.Add(bb);
         }
         for (var i = 0; i < bounds.Count; i++)
             indices.Add(i);
 
-        var pool = AABB.CreateAABBPool();
+        var pool = AABB3.CreateAABBPool();
         var sah = new BinnedSAH(pool);
 
         int countFromLeft;
