@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Gist.Extensions.AABB;
-using Gist.Intersection;
+using nobnak.Gist.Extensions.AABB;
+using nobnak.Gist.Intersection;
 
 namespace Recon.BoundingVolumes {
         

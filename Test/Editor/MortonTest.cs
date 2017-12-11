@@ -2,7 +2,7 @@
 using UnityEditor;
 using NUnit.Framework;
 using System.Text;
-using Gist;
+using nobnak.Gist;
 
 namespace Recon {
 

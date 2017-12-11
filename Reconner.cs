@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Gist;
+using nobnak.Gist;
 using Recon.SpacePartition;
 using Recon.VisibleArea;
 using Recon.BoundingVolumes;
-using Gist.Intersection;
+using nobnak.Gist.Intersection;
 
 namespace Recon {
     [ExecuteInEditMode]

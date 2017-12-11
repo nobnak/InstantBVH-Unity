@@ -1,4 +1,4 @@
-﻿using Gist.Pooling;
+﻿using nobnak.Gist.Pooling;
 using System.Collections.Generic;
 using UnityEngine;
 

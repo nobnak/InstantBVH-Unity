@@ -2,8 +2,8 @@
 using System.Collections;
 using Recon.BoundingVolumes;
 using Recon.Extension;
-using Gist.Extensions.AABB;
-using Gist.Intersection;
+using nobnak.Gist.Extensions.AABB;
+using nobnak.Gist.Intersection;
 
 namespace Recon.BoundingVolumes.Behaviour {
     

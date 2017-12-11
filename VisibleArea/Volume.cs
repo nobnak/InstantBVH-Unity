@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Gist.Extensions.AABB;
+using nobnak.Gist.Extensions.AABB;
 using Recon.BoundingVolumes;
 using Recon.BoundingVolumes.Behaviour;
 

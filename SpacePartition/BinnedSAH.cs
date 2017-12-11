@@ -1,5 +1,5 @@
-﻿using Gist.Intersection;
-using Gist.Pooling;
+﻿using nobnak.Gist.Intersection;
+using nobnak.Gist.Pooling;
 using System.Collections.Generic;
 using System.Linq;
 

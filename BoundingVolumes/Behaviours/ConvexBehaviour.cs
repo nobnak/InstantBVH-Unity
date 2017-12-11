@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Gist.Intersection;
+using nobnak.Gist.Intersection;
 
 namespace Recon.BoundingVolumes.Behaviour {
     public interface IConvex {

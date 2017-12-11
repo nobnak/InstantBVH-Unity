@@ -1,7 +1,7 @@
-﻿using Gist;
-using Gist.Intersection;
-using Gist.Pooling;
-using Gist.Scoped;
+﻿using nobnak.Gist;
+using nobnak.Gist.Intersection;
+using nobnak.Gist.Pooling;
+using nobnak.Gist.Scoped;
 using System.Collections.Generic;
 using UnityEngine;
 

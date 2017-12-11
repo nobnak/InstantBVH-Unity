@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Recon.BoundingVolumes;
-using Gist.Intersection;
+using nobnak.Gist.Intersection;
 
 namespace Recon.BoundingVolumes.Behaviour {
     [RequireComponent(typeof(Camera))]

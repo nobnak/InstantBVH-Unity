@@ -1,4 +1,4 @@
-﻿using Gist.Intersection;
+﻿using nobnak.Gist.Intersection;
 using NUnit.Framework;
 using Recon.SpacePartition;
 using System.Collections.Generic;
