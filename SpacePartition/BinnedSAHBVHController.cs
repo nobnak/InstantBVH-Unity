@@ -1,4 +1,4 @@
-﻿using nobnak.Gist;
+using nobnak.Gist;
 using nobnak.Gist.Intersection;
 using nobnak.Gist.Pooling;
 using nobnak.Gist.Scoped;
@@ -36,9 +36,13 @@ namespace Recon.SpacePartition {
             for (var i = 0; i < bounds.Count; i++)
                 indices.Add(i);
 
+			//Debug.LogFormat("AABB3 object pool : count={0}", boundsPool.Count);
             using (new ScopedPlug<List<AABB3>>(objectBounds, obs => MemoryPoolUtil.Free(obs, boundsPool))) {
-                foreach (var b in bounds)
-                    objectBounds.Add(b);
+				foreach (var b in bounds) {
+					var aabb = boundsPool.New();
+					aabb.Set(b);
+					objectBounds.Add(aabb);
+				}
 
                 if ((_root = Build(objectBounds, indices, 0, indices.Count, sah, _pool)) != null)
                     _root.Build(new IndexedList<Bounds>(indices, bounds), new IndexedList<Value>(indices, dataset));

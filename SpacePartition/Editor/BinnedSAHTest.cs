@@ -1,4 +1,4 @@
-﻿using nobnak.Gist.Intersection;
+using nobnak.Gist.Intersection;
 using NUnit.Framework;
 using Recon.SpacePartition;
 using System.Collections.Generic;
@@ -14,8 +14,9 @@ public class BinnedSAHTest {
         var indices = new List<int>();
 
         for (var i = 0; i < 4; i++) {
-            var bb = (AABB3)new Bounds(new Vector3(((i % 2) == 0 ? 1f : -1f) * (i + 1f), 0f, 0f), Vector3.one);
-            bounds.Add(bb);
+            var b = new Bounds(new Vector3(((i % 2) == 0 ? 1f : -1f) * (i + 1f), 0f, 0f), Vector3.one);
+			var aabb = new AABB3(b);
+            bounds.Add(aabb);
         }
         for (var i = 0; i < bounds.Count; i++)
             indices.Add(i);
