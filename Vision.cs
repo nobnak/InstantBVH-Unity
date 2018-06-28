@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using nobnak.Gist;
 using System.Collections.Generic;
@@ -48,7 +48,7 @@ namespace Recon {
             ConvUp.AssureUpdateConvex ();
             _frustum.DrawGizmos ();
             foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
-                DrawInsight (v.GetBounds ().center);
+                DrawInsight (v.GetBounds ().Center);
         }
 
 		public bool IsInSight(Volume v) {

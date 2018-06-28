@@ -1,4 +1,5 @@
-﻿using nobnak.Gist.Pooling;
+using nobnak.Gist.Pooling;
+using nobnak.Gist.Primitive;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,9 +16,9 @@ namespace Recon.SpacePartition {
             BVH<Value>.Clear (_root, _pool);
             return this;
         }
-        public abstract BaseBVHController<Value> Build(IList<Bounds> Bous, IList<Value> Vals);
+        public abstract BaseBVHController<Value> Build(IList<FastBounds> Bous, IList<Value> Vals);
 
-        public virtual IEnumerable<Value> Intersect(Bounds bb) {
+        public virtual IEnumerable<Value> Intersect(FastBounds bb) {
             return Intersect (_root, bb);
         }
         public virtual int Count() { return Count(_root); }
@@ -34,7 +35,7 @@ namespace Recon.SpacePartition {
         public static int CountValues(BVH<Value> t) {
             return t == null ? 0 : (t.Values.Count + CountValues (t.ch [0]) + CountValues (t.ch [1]));
         }
-        public static IEnumerable<Value> Intersect(BVH<Value> t, Bounds bb) {
+        public static IEnumerable<Value> Intersect(BVH<Value> t, FastBounds bb) {
             if (t == null || !t.bb.Intersects (bb))
                 yield break;
             

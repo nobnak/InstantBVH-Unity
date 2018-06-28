@@ -1,6 +1,7 @@
-﻿using nobnak.Gist;
+using nobnak.Gist;
 using nobnak.Gist.Extensions.AABB;
 using nobnak.Gist.Pooling;
+using nobnak.Gist.Primitive;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,17 +20,17 @@ namespace Recon.SpacePartition {
             return this;
         }
 
-        public override BaseBVHController<Value> Build(IList<Bounds> Bous, IList<Value> Vals) {
+        public override BaseBVHController<Value> Build(IList<FastBounds> Bous, IList<Value> Vals) {
             Clear ();
 
-            var galaxy = Bous.Select (b => b.center).Encapsulate ();
+            var galaxy = Bous.Select (b => b.Center).Encapsulate ();
             var min = galaxy.min;
             var size = galaxy.size;
             var sizeInv = new Vector3 (1f / size.x, 1f / size.y, 1f / size.z);
 
             for (var i = 0; i < Bous.Count; i++) {
                 var bb = Bous [i];
-                var p = Vector3.Scale (bb.center - min, sizeInv);
+                var p = Vector3.Scale (bb.Center - min, sizeInv);
                 var id = MortonCodeInt.Encode (p.x, p.y, p.z);
                 _indices.Add (i);
                 _ids.Add (id);
@@ -37,7 +38,7 @@ namespace Recon.SpacePartition {
 
             _root = Sort (_indices, _ids, 0, _indices.Count, _pool, MortonCodeInt.STRIDE_BITS);
             if (_root != null)
-                _root.Build (new IndexedList<Bounds> (_indices, Bous), new IndexedList<Value> (_indices, Vals));
+                _root.Build (new IndexedList<FastBounds> (_indices, Bous), new IndexedList<Value> (_indices, Vals));
 
             return this;
         }

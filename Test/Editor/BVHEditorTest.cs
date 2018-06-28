@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using NUnit.Framework;
 using Recon.SpacePartition;
 using System.Text;
+using nobnak.Gist.Primitive;
 
 namespace Recon {
         
@@ -13,7 +14,7 @@ namespace Recon {
             var delta = 1e-4f;
             var n = 4;
 
-            var bounds = new Bounds[n];
+            var bounds = new FastBounds[n];
             var vals = new Value[n];
             for (var i = 0; i < n; i++) {
                 bounds [i] = new Bounds (Vector3.one * i, Vector3.one);
@@ -32,8 +33,8 @@ namespace Recon {
             Assert.AreEqual (0, bvh.Root.offset);
             Assert.AreEqual (n, bvh.Root.length);
             for (var i = 0; i < 3; i++) {
-                Assert.AreEqual (1.5f, bvh.Root.bb.center [i], delta);
-                Assert.AreEqual (2f, bvh.Root.bb.extents [i], delta);
+                Assert.AreEqual (1.5f, bvh.Root.bb.Center [i], delta);
+                Assert.AreEqual (2f, bvh.Root.bb.Extents [i], delta);
             }
 
             Assert.AreEqual (0, bvh.Root.ch [0].offset);
@@ -50,8 +51,8 @@ namespace Recon {
                 Assert.AreEqual (j, bvh.Root.ch [s].ch [t].Values.First.Value.id);
                     
                 for (var i = 0; i < 3; i++) {
-                    Assert.AreEqual (j, bvh.Root.ch [s].ch [t].bb.center [i], delta);
-                    Assert.AreEqual (1f, bvh.Root.ch [s].ch [t].bb.size [i], delta);
+                    Assert.AreEqual (j, bvh.Root.ch [s].ch [t].bb.Center [i], delta);
+                    Assert.AreEqual (1f, bvh.Root.ch [s].ch [t].bb.Size [i], delta);
                 }
             }
     	}

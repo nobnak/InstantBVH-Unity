@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using nobnak.Gist.Extensions.AABB;
 using nobnak.Gist.Intersection;
+using nobnak.Gist.Primitive;
 
 namespace Recon.BoundingVolumes {
         
@@ -14,7 +15,7 @@ namespace Recon.BoundingVolumes {
 
         public Matrix4x4 modelMatrix;
         public Matrix4x4 modelITMatrix;
-        public Bounds worldBounds;
+        public FastBounds worldBounds;
 
         public Frustum(Vector3 head, Vector3 farBottomLeft, Quaternion axis)
             : this(head, farBottomLeft, MIN_NEAR_PLANE, farBottomLeft.z, axis) {
@@ -66,12 +67,12 @@ namespace Recon.BoundingVolumes {
             yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (-nearBottomLeft.x, nearBottomLeft.y, nearBottomLeft.z));
             yield return modelMatrix.MultiplyPoint3x4 (new Vector3 (-nearBottomLeft.x, -nearBottomLeft.y, nearBottomLeft.z));
         }
-        public Bounds LocalBounds() {
-            return new Bounds (
-                new Vector3(0f, 0f, 0.5f * (nearBottomLeft.z + farBottomLeft.z)),
-                new Vector3(-2f * farBottomLeft.x, -2f * farBottomLeft.y, farBottomLeft.z - nearBottomLeft.z));
+        public FastBounds LocalBounds() {
+			return new FastBounds(
+				farBottomLeft.x, farBottomLeft.y, nearBottomLeft.z,
+				-farBottomLeft.x, -farBottomLeft.y, farBottomLeft.z);
         }
-        public Bounds WorldBounds() {
+        public FastBounds WorldBounds() {
             return worldBounds;
         }
         public Matrix4x4 ModelMatrix() {
@@ -95,7 +96,7 @@ namespace Recon.BoundingVolumes {
             Gizmos.matrix = Matrix4x4.identity;
 
             Gizmos.color = ConvexPolyhedronSettings.GizmoAABBColor;
-            Gizmos.DrawWireCube (aabb.center, aabb.size);
+            Gizmos.DrawWireCube (aabb.Center, aabb.Size);
 
             Gizmos.color = ConvexPolyhedronSettings.GizmoLineColor;            
             DrawFrustum (modelmat, ConvexPolyhedronSettings.GizmoLineColor);

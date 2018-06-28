@@ -1,6 +1,7 @@
 using nobnak.Gist;
 using nobnak.Gist.Intersection;
 using nobnak.Gist.Pooling;
+using nobnak.Gist.Primitive;
 using nobnak.Gist.Scoped;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace Recon.SpacePartition {
             return this;
         }
 
-        public override BaseBVHController<Value> Build(IList<Bounds> bounds, IList<Value> dataset) {
+        public override BaseBVHController<Value> Build(IList<FastBounds> bounds, IList<Value> dataset) {
             Clear ();
 
             sah.Clear();
@@ -43,7 +44,7 @@ namespace Recon.SpacePartition {
 				}
 
                 if ((_root = Build(objectBounds, indices, 0, indices.Count, sah, _pool)) != null)
-                    _root.Build(new IndexedList<Bounds>(indices, bounds), new IndexedList<Value>(indices, dataset));
+                    _root.Build(new IndexedList<FastBounds>(indices, bounds), new IndexedList<Value>(indices, dataset));
             }
 
             return this;

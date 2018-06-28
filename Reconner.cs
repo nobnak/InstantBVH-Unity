@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using nobnak.Gist;
@@ -6,6 +6,7 @@ using Recon.SpacePartition;
 using Recon.VisibleArea;
 using Recon.BoundingVolumes;
 using nobnak.Gist.Intersection;
+using nobnak.Gist.Primitive;
 
 namespace Recon {
     [ExecuteInEditMode]
@@ -37,12 +38,12 @@ namespace Recon {
         #region Static
 		static Dataset<Volume> _database;
 		static BaseBVHController<Volume> _bvh;
-		static List<Bounds> _bounds;
+		static List<FastBounds> _bounds;
 
 		static Reconner() {
 			_database = new Dataset<Volume> ();
             _bvh = new BinnedSAHBVHController<Volume>();
-            _bounds = new List<Bounds> ();
+            _bounds = new List<FastBounds> ();
 		}
 
         public static Reconner Instance { get; protected set; }
@@ -71,7 +72,7 @@ namespace Recon {
                 if (BroadFilter (v) && v.GetConvexPolyhedron ().Intersect (conv) && NarrowFilter (v))
                     yield return v;
         }
-        public static IEnumerable<Volume> Broadphase(BaseBVHController<Volume> bvh, Bounds bb) {
+        public static IEnumerable<Volume> Broadphase(BaseBVHController<Volume> bvh, FastBounds bb) {
             foreach (var v in bvh.Intersect(bb))
                 yield return v;
         }
