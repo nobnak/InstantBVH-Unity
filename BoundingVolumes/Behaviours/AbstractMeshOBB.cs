@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using Recon.BoundingVolumes;
-using Recon.Extension;
 using nobnak.Gist.Extensions.AABB;
 using nobnak.Gist.Intersection;
+using nobnak.Gist.Primitive;
+using UnityEngine;
 
 namespace Recon.BoundingVolumes.Behaviour {
-    
-    public abstract class AbstractMeshOBB : ConvexBuilder {
+
+	public abstract class AbstractMeshOBB : ConvexBuilder {
         public enum CoordinatesEnum { Skin = 0, Self, World }
 
         [SerializeField]
@@ -47,7 +45,7 @@ namespace Recon.BoundingVolumes.Behaviour {
 
         OBB3 CreateOBB() {
             var rootBone = RootTransform();
-            var localBounds = LocalBounds();
+            var localBounds = (FastBounds)LocalBounds();
 
             switch (targetCoordinates) {
             case CoordinatesEnum.World:
