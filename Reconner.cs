@@ -54,29 +54,35 @@ namespace Recon {
             return _database.Remove (vol) >= 0;
         }
 
-#region Intersection
+		#region Intersection
+		protected static List<Volume> tmpList = new List<Volume>();
+
         public static readonly System.Func<Volume, bool> Pass = v => true;
         public static IEnumerable<Volume> Find(IConvex3Polytope conv) { return Find(conv, Pass, Pass); }
         public static IEnumerable<Volume> Find(IConvex3Polytope conv, System.Func<Volume, bool> NarrowFilter) {
             return Find(conv, NarrowFilter, Pass);
         }
-        public static IEnumerable<Volume> Find(IConvex3Polytope conv, 
+        public static IEnumerable<Volume> Find(IConvex3Polytope conv,
             System.Func<Volume, bool> NarrowFilter, System.Func<Volume, bool> BroadFilter) {
             var r = Instance;
             BaseBVHController<Volume> bvh;
             if (r == null || (bvh = r.BVH) == null)
                 yield break;
-            
+
             var bb = conv.WorldBounds ();
-            foreach (var v in Broadphase(bvh, bb))
+			tmpList.Clear();
+            foreach (var v in Broadphase(bvh, bb, tmpList))
                 if (BroadFilter (v) && v.GetConvexPolyhedron ().Intersect (conv) && NarrowFilter (v))
                     yield return v;
         }
-        public static IEnumerable<Volume> Broadphase(BaseBVHController<Volume> bvh, FastBounds bb) {
-            foreach (var v in bvh.Intersect(bb))
-                yield return v;
-        }
-        public static IEnumerable<Volume> NarrowPhase(IConvex3Polytope conv, IEnumerable<Volume> broadphased) {
+		public static IEnumerable<Volume> Broadphase(BaseBVHController<Volume> bvh, FastBounds bb) {
+			foreach (var v in bvh.Intersect(bb))
+				yield return v;
+		}
+		public static IList<Volume> Broadphase(BaseBVHController<Volume> bvh, FastBounds bb, IList<Volume> result) {
+			return bvh.Intersect(bb, result);
+		}
+		public static IEnumerable<Volume> NarrowPhase(IConvex3Polytope conv, IEnumerable<Volume> broadphased) {
             foreach (var v in broadphased)
                 if (v.GetConvexPolyhedron().Intersect(conv))
                     yield return v;

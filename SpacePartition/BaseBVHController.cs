@@ -18,10 +18,13 @@ namespace Recon.SpacePartition {
         }
         public abstract BaseBVHController<Value> Build(IList<FastBounds> Bous, IList<Value> Vals);
 
-        public virtual IEnumerable<Value> Intersect(FastBounds bb) {
-            return Intersect (_root, bb);
-        }
-        public virtual int Count() { return Count(_root); }
+		public virtual IEnumerable<Value> Intersect(FastBounds bb) {
+			return Intersect(_root, bb);
+		}
+		public virtual IList<Value> Intersect(FastBounds bb, IList<Value> result) {
+			return Intersect(_root, bb, result);
+		}
+		public virtual int Count() { return Count(_root); }
         public virtual int CountValues() {
             return CountValues (_root);
         }
@@ -38,16 +41,29 @@ namespace Recon.SpacePartition {
         public static IEnumerable<Value> Intersect(BVH<Value> t, FastBounds bb) {
             if (t == null || !t.bb.Intersects (bb))
                 yield break;
-            
-            foreach (var s in t.ch)
-                foreach (var r in Intersect(s, bb))
-                    yield return r;
+
+			if (!t.IsLeaf())
+				foreach (var s in t.ch)
+					if (s != null)
+						foreach (var r in Intersect(s, bb))
+							yield return r;
 
             foreach (var v in t.Values)
                 if (v != null)
                     yield return v;
 
         }
+		public static IList<Value> Intersect(BVH<Value> t, FastBounds bb, IList<Value> result) {
+			if (t != null && t.bb.Intersects(bb)) {
+				Intersect(t.ch[0], bb, result);
+				Intersect(t.ch[1], bb, result);
+
+				foreach (var v in t.Values)
+					if (v != null)
+						result.Add(v);
+			}
+			return result;
+		}
         public static IList<int> Swap (IList<int> list, int i, int j) {
             var tmp = list [i];
             list [i] = list [j];
