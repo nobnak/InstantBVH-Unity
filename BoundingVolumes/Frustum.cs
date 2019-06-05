@@ -84,7 +84,7 @@ namespace Recon.BoundingVolumes {
 
             Gizmos.color = color;
             Gizmos.matrix = modelmat;
-            Gizmos.DrawFrustum (new Vector3(0f, 0f, nearPlane), FoV (), FarPlane (), nearPlane, Aspect ());
+            Gizmos.DrawFrustum (Vector3.zero, FoV (), FarPlane (), nearPlane, Aspect ());
             Gizmos.matrix = Matrix4x4.identity;
         }
         public void DrawFrustum(Color color) { DrawFrustum (ModelMatrix (), color); }
