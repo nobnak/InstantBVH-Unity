@@ -21,11 +21,12 @@ namespace Recon.BoundingVolumes.Behaviour {
 
         #region Unity
         protected virtual void OnDrawGizmos() {
-			if (!isActiveAndEnabled || _obb == null)
+			if (!isActiveAndEnabled)
                 return;
 
             ConvUp.AssureUpdateConvex ();
-            _obb.DrawGizmos ();
+			if (_obb != null)
+				_obb.DrawGizmos ();
         }
         #endregion
 
