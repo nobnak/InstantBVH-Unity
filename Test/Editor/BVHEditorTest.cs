@@ -1,32 +1,29 @@
-using UnityEngine;
-using UnityEditor;
-using NUnit.Framework;
-using Recon.SpacePartition;
-using System.Text;
 using nobnak.Gist.Primitive;
+using NUnit.Framework;
+using Recon.Core;
+using System.Text;
+using UnityEngine;
 
 namespace Recon {
-        
-    public class BVHEditorTest {
+
+	public class BVHEditorTest {
 
     	[Test]
     	public void EditorTest() {
             var delta = 1e-4f;
             var n = 4;
 
-            var bounds = new FastBounds[n];
-            var vals = new Value[n];
+			var bvh = new MortonBVH<int>();
             for (var i = 0; i < n; i++) {
-                bounds [i] = new Bounds (Vector3.one * i, Vector3.one);
-                vals [i] = new Value (){ id = i };
+                var b = new Bounds (Vector3.one * i, Vector3.one);
+                var v = new Volume(b, i);
+				bvh.Add(v);
             }
-
-            var bvh = new MortonBVHController<Value> ();
-            bvh.Build (bounds, vals);
+            bvh.Update ();
 
             var nodeCount = bvh.Count ();
             var valueCount = bvh.CountValues ();
-            bvh.Build (bounds, vals);
+            bvh.Update ();
             Assert.AreEqual(nodeCount, bvh.Count ());
             Assert.AreEqual (valueCount, bvh.CountValues ());
 
@@ -48,7 +45,7 @@ namespace Recon {
                 var t = (j & 1) != 0 ? 1 : 0;
 
                 Assert.AreEqual (1, bvh.Root.ch [s].ch [t].Values.Count);
-                Assert.AreEqual (j, bvh.Root.ch [s].ch [t].Values.First.Value.id);
+                Assert.AreEqual (j, bvh.Root.ch [s].ch [t].Values.First.Value);
                     
                 for (var i = 0; i < 3; i++) {
                     Assert.AreEqual (j, bvh.Root.ch [s].ch [t].bb.Center [i], delta);
@@ -58,7 +55,7 @@ namespace Recon {
     	}
 
         #region Static
-        public static StringBuilder List(StringBuilder buf, BVH<Value> t, int depth) {
+        public static StringBuilder List(StringBuilder buf, Node<int> t, int depth) {
             if (t == null)
                 return buf;
 
@@ -66,7 +63,7 @@ namespace Recon {
                 buf.Append ("        ");
             buf.AppendFormat ("({0},{1})={2}", t.offset, t.length, t.bb);
             if (t.IsLeaf ())
-                buf.AppendFormat (" Values={0}", t.Values.First.Value.id);
+                buf.AppendFormat (" Values={0}", t.Values.First.Value);
             buf.AppendLine ();
 
             for (var i = 0; i < 2; i++)
@@ -76,8 +73,15 @@ namespace Recon {
         }
         #endregion
 
-        public class Value {
+        public class Volume : IVolume<int> {
             public int id;
-        }
+			public FastBounds Bounds { get; protected set; }
+			public int Value { get { return id; } }
+
+			public Volume(FastBounds b, int id) {
+				Bounds = b;
+				this.id = id;
+			}
+		}
     }
 }

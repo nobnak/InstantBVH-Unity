@@ -4,35 +4,35 @@ using nobnak.Gist.Extensions.AABB;
 using Recon.BoundingVolumes;
 using Recon.BoundingVolumes.Behaviour;
 using nobnak.Gist.Primitive;
+using nobnak.Gist.Extensions.ComponentExt;
+using Recon.Core;
 
 namespace Recon.VisibleArea {
     
     #region Definitions
-    public interface IVolume {
-		FastBounds GetBounds();
-    }
     [System.Serializable]
     public class VolumeEvent : UnityEngine.Events.UnityEvent<Volume> {}
     #endregion
         
-    [ExecuteInEditMode]
-    public abstract class Volume : AbstractMeshOBB, IVolume {
+    [ExecuteAlways]
+    public abstract class Volume : AbstractMeshOBB, IVolume<Volume> {
         public int mask = -1;
 
-        #region Unity
+		#region Unity
 		protected virtual void OnEnable () {
             _convUp = null;
-            Reconner.Add (this);
+            this.CallbackParent<Reconner>(v => v.Add (this));
         }
 		protected virtual void OnDisable() {
-            Reconner.Remove (this);
+			this.CallbackParent<Reconner>(v => v.Remove (this));
         }
         #endregion
 
         #region IVolume implementation
-		public virtual FastBounds GetBounds () {
-            return GetConvexPolyhedron ().WorldBounds ();
-        }
-        #endregion
-    }
+		public virtual FastBounds Bounds {
+			get { return GetConvexPolyhedron().WorldBounds(); }
+		}
+		public Volume Value { get { return this; } }
+		#endregion
+	}
 }

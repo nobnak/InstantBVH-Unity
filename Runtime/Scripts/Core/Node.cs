@@ -7,27 +7,27 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Recon.SpacePartition {
+namespace Recon.Core {
 
-    public class BVH<Value> where Value : class {
+    public class Node<V> {
 
-        public readonly BVH<Value>[] ch = new BVH<Value>[2];
-        public readonly LinkedList<Value> Values = new LinkedList<Value>();
+        public readonly Node<V>[] ch = new Node<V>[2];
+        public readonly LinkedList<V> Values = new LinkedList<V>();
 
 		public FastBounds bb;
         public int offset, length;
 
-        public BVH<Value> Reset(int offset, int length) {
+        public Node<V> Reset(int offset, int length) {
             this.offset = offset;
             this.length = length;
 			return this;
 		}
-        public BVH<Value> SetChildren(BVH<Value> l, BVH<Value> r) {
+        public Node<V> SetChildren(Node<V> l, Node<V> r) {
             ch [0] = l; 
             ch [1] = r;
             return this;
         }
-        public BVH<Value> Clear() {
+        public Node<V> Clear() {
             System.Array.Clear (ch, 0, ch.Length);
             Values.Clear ();
             return this;
@@ -35,18 +35,20 @@ namespace Recon.SpacePartition {
 		public bool IsLeaf() {
 			return ch [0] == null && ch [1] == null;
 		}
-        public FastBounds Build(IReadOnlyList<FastBounds> bounds, IReadOnlyList<Value> values) {
+        public FastBounds Recalculate(IReadOnlyList<IVolume<V>> volumes) {
             if (IsLeaf ()) {
-                bb = bounds.Range (offset, length).Encapsulate ();
-                foreach (var v in values.Range (offset, length))
+                bb = volumes.Range(offset, length).Select(v => v.Bounds).Encapsulate ();
+                foreach (var v in volumes.Range (offset, length).Select(v => v.Value))
                     Values.AddLast (v);
             } else
-                bb.Encapsulate (ch.Where (t => t != null).Select (t => t.Build (bounds, values)).Encapsulate ());
+                bb.Encapsulate (ch.Where (c => c != null)
+					.Select (c => c.Recalculate (volumes))
+					.Encapsulate ());
             return bb;
         }
 
         #region Static
-        public static IMemoryPool<BVH<Value>> Clear(BVH<Value> t, IMemoryPool<BVH<Value>> alloc) {
+        public static IMemoryPool<Node<V>> Clear(Node<V> t, IMemoryPool<Node<V>> alloc) {
             if (t == null)
                 return alloc;
 
@@ -57,7 +59,7 @@ namespace Recon.SpacePartition {
         #endregion
 
         #region Gizmo
-        public static void DrawBounds(BVH<Value> t, int depth, int length) {
+        public static void DrawBounds(Node<V> t, int depth, int length) {
             if (t == null || depth >= length)
                 return;
 

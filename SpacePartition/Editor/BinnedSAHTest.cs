@@ -1,6 +1,6 @@
 using nobnak.Gist.Intersection;
 using NUnit.Framework;
-using Recon.SpacePartition;
+using Recon.Core;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -22,7 +22,7 @@ public class BinnedSAHTest {
             indices.Add(i);
 
         var pool = AABB3.CreateAABBPool();
-        var sah = new BinnedSAH(pool);
+        var sah = new BinnedSAH<int>(pool);
 
         int countFromLeft;
         sah.Build(bounds, indices, 0, bounds.Count, out countFromLeft);

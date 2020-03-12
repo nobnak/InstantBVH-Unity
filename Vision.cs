@@ -8,6 +8,7 @@ using Recon.BoundingVolumes.Behaviour;
 using Recon.BoundingVolumes;
 using System.Linq;
 using nobnak.Gist.Intersection;
+using nobnak.Gist.Extensions.ComponentExt;
 
 namespace Recon {
     [ExecuteInEditMode]
@@ -25,30 +26,33 @@ namespace Recon {
 
         public VolumeEvent InSight;
 
-        List<Volume> _insightVolumes;
-        Volume[] _selfVolumes;
-        ConvexUpdator _convUp;
-        Frustum _frustum;
+		protected Reconner reconner;
+		protected List<Volume> _insightVolumes;
+		protected Volume[] _selfVolumes;
+		protected ConvexUpdator _convUp;
+		protected Frustum _frustum;
 
         void Awake() {
+			reconner = this.Parent<Reconner>().FirstOrDefault();
+
             _insightVolumes = new List<Volume> ();
             _selfVolumes = GetComponentsInChildren<Volume> ();
         }
         void Update() {
             _insightVolumes.Clear ();
-            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
+            foreach (var v in reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
                 _insightVolumes.Add (v);
             foreach (var v in _insightVolumes)
                 InSight.Invoke (v);            
         }
         void OnDrawGizmos() {
-            if (!isActiveAndEnabled)
+            if (!isActiveAndEnabled || reconner == null)
                 return;
             
             ConvUp.AssureUpdateConvex ();
             _frustum.DrawGizmos ();
-            foreach (var v in Reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
-                DrawInsight (v.GetBounds ().Center);
+            foreach (var v in reconner.Find(GetConvexPolyhedron(), FilterSelfIntersection, FilterMask))
+                DrawInsight (v.Bounds.Center);
         }
 
 		public bool IsInSight(Volume v) {

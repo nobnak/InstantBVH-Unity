@@ -1,71 +1,51 @@
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using nobnak.Gist;
-using Recon.SpacePartition;
-using Recon.VisibleArea;
-using Recon.BoundingVolumes;
 using nobnak.Gist.Intersection;
 using nobnak.Gist.Primitive;
+using Recon.Core;
+using Recon.VisibleArea;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Recon {
-    [ExecuteInEditMode]
+	[ExecuteAlways]
+	[DefaultExecutionOrder(-1000)]
     public class Reconner : MonoBehaviour {
-        void OnEnable() {
-            Instance = this;
-        }
-        void Update() {
-            RebuildBVH ();
+		protected BaseBVH<Volume> _bvh = new BinnedSAH<Volume>(AABB3.CreateAABBPool());
+
+		#region unity
+		void Update() {
+            _bvh.Update ();
         }
         void OnDrawGizmos() {
-            if (Reconner._bvh == null)
+            if (_bvh == null)
                 return;
             Gizmos.color = gizmoColorBounds;
-            Reconner._bvh.DrawBounds (0, 10);
+            _bvh.DrawBounds (0, 10);
         }
+		#endregion
 
+		#region interface
 		public Color gizmoColorBounds = Color.green;
-        public BaseBVHController<Volume> BVH { get { return Reconner._bvh; } }
+        public BaseBVH<Volume> BVH { get { return _bvh; } }
 
-        public BaseBVHController<Volume> RebuildBVH () {
-            Reconner._bounds.Clear ();
-            var vals = Reconner._database.GetList ();
-            for (var i = 0; i < vals.Count; i++)
-                Reconner._bounds.Add (vals [i].GetBounds ());
-            return Reconner._bvh.Build (Reconner._bounds, vals);
+        public void Add(Volume vol) {
+            _bvh.Add (vol);
         }
-
-        #region Static
-		static Dataset<Volume> _database;
-		static BaseBVHController<Volume> _bvh;
-		static List<FastBounds> _bounds;
-
-		static Reconner() {
-			_database = new Dataset<Volume> ();
-            _bvh = new BinnedSAHBVHController<Volume>();
-            _bounds = new List<FastBounds> ();
-		}
-
-        public static Reconner Instance { get; protected set; }
-        public static void Add(Volume vol) {
-            _database.Add (vol);
-        }
-        public static bool Remove(Volume vol) {
-            return _database.Remove (vol) >= 0;
+        public void Remove(Volume vol) {
+            _bvh.Remove (vol);
         }
 
 		#region Intersection
-		protected static List<Volume> tmpList = new List<Volume>();
+		protected List<Volume> tmpList = new List<Volume>();
 
-        public static readonly System.Func<Volume, bool> Pass = v => true;
-        public static IEnumerable<Volume> Find(IConvex3Polytope conv) { return Find(conv, Pass, Pass); }
-        public static IEnumerable<Volume> Find(IConvex3Polytope conv, System.Func<Volume, bool> NarrowFilter) {
+        public readonly System.Func<Volume, bool> Pass = v => true;
+        public IEnumerable<Volume> Find(IConvex3Polytope conv) { return Find(conv, Pass, Pass); }
+        public IEnumerable<Volume> Find(IConvex3Polytope conv, System.Func<Volume, bool> NarrowFilter) {
             return Find(conv, NarrowFilter, Pass);
         }
-        public static IEnumerable<Volume> Find(IConvex3Polytope conv,
+        public IEnumerable<Volume> Find(IConvex3Polytope conv,
             System.Func<Volume, bool> NarrowFilter, System.Func<Volume, bool> BroadFilter) {
-            var r = Instance;
-            BaseBVHController<Volume> bvh;
+            var r = this;
+            BaseBVH<Volume> bvh;
             if (r == null || (bvh = r.BVH) == null)
                 yield break;
 
@@ -75,20 +55,20 @@ namespace Recon {
                 if (BroadFilter (v) && v.GetConvexPolyhedron ().Intersect (conv) && NarrowFilter (v))
                     yield return v;
         }
-		public static IEnumerable<Volume> Broadphase(BaseBVHController<Volume> bvh, FastBounds bb) {
+		public IEnumerable<Volume> Broadphase(BaseBVH<Volume> bvh, FastBounds bb) {
 			foreach (var v in bvh.Intersect(bb))
 				yield return v;
 		}
-		public static IList<Volume> Broadphase(BaseBVHController<Volume> bvh, FastBounds bb, IList<Volume> result) {
+		public IList<Volume> Broadphase(BaseBVH<Volume> bvh, FastBounds bb, IList<Volume> result) {
 			return bvh.Intersect(bb, result);
 		}
-		public static IEnumerable<Volume> NarrowPhase(IConvex3Polytope conv, IEnumerable<Volume> broadphased) {
+		public IEnumerable<Volume> NarrowPhase(IConvex3Polytope conv, IEnumerable<Volume> broadphased) {
             foreach (var v in broadphased)
                 if (v.GetConvexPolyhedron().Intersect(conv))
                     yield return v;
         }
-#endregion
-#endregion
+		#endregion
 
+		#endregion
     }
 }
