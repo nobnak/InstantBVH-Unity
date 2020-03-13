@@ -4,7 +4,7 @@ using Recon.Core;
 using System.Text;
 using UnityEngine;
 
-namespace Recon {
+namespace Recon.Editor.Test {
 
 	public class BVHEditorTest {
 
@@ -19,11 +19,11 @@ namespace Recon {
                 var v = new Volume(b, i);
 				bvh.Add(v);
             }
-            bvh.Update ();
+            bvh.UpdateTree ();
 
             var nodeCount = bvh.Count ();
             var valueCount = bvh.CountValues ();
-            bvh.Update ();
+            bvh.UpdateTree ();
             Assert.AreEqual(nodeCount, bvh.Count ());
             Assert.AreEqual (valueCount, bvh.CountValues ());
 

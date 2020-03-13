@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using Recon.BoundingVolumes;
 using Recon.Extension;
 using nobnak.Gist.Extensions.AABB;
 
-namespace Recon.BoundingVolumes.Behaviour {
+namespace Recon.BehaviourSys {
     
     public class SkinOBB : AbstractMeshOBB {
         SkinnedMeshRenderer _attachedSkinmesh;

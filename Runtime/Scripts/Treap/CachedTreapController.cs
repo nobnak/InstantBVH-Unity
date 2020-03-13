@@ -1,6 +1,6 @@
-﻿using nobnak.Gist.Pooling;
+using nobnak.Gist.Pooling;
 
-namespace Recon.Treap {
+namespace Recon.TreapSys {
 
     public class CachedTreapController<Value> : ITreapController<Value> {
         public Treap<Value> Root { get { return _root; } }

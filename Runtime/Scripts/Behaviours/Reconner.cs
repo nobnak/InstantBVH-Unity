@@ -1,19 +1,19 @@
 using nobnak.Gist.Intersection;
 using nobnak.Gist.Primitive;
 using Recon.Core;
-using Recon.VisibleArea;
+using Recon.VolumeSys;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Recon {
+namespace Recon.BehaviourSys {
 	[ExecuteAlways]
 	[DefaultExecutionOrder(-1000)]
     public class Reconner : MonoBehaviour {
-		protected BaseBVH<Volume> _bvh = new BinnedSAH<Volume>(AABB3.CreateAABBPool());
+		protected BaseBVH<Volume> _bvh = new BinnedSAH<Volume>();
 
 		#region unity
 		void Update() {
-            _bvh.Update ();
+            _bvh.UpdateTree ();
         }
         void OnDrawGizmos() {
             if (_bvh == null)

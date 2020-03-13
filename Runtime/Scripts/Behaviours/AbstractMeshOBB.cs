@@ -3,7 +3,7 @@ using nobnak.Gist.Intersection;
 using nobnak.Gist.Primitive;
 using UnityEngine;
 
-namespace Recon.BoundingVolumes.Behaviour {
+namespace Recon.BehaviourSys {
 
 	public abstract class AbstractMeshOBB : ConvexBuilder {
         public enum CoordinatesEnum { Skin = 0, Self, World }

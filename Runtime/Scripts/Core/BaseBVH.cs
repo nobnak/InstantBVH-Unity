@@ -15,7 +15,7 @@ namespace Recon.Core {
             ()=>new Node<Value>(), (v)=>v.Clear(), (v)=> { });
 
 		#region abstract
-		public abstract BaseBVH<Value> Update();
+		public abstract BaseBVH<Value> UpdateTree();
 		#endregion
 
 		#region interface
@@ -30,7 +30,7 @@ namespace Recon.Core {
 		public virtual void Remove(IVolume<Value> v) {
 			volumes.Remove(v);
 		}
-		public virtual BaseBVH<Value> Clear() {
+		public virtual BaseBVH<Value> ClearTree() {
             Node<Value>.Clear (_root, _pool);
             return this;
         }

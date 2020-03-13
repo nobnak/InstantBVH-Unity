@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using NUnit.Framework;
 using System.Text;
 using nobnak.Gist;
 
-namespace Recon {
+namespace Recon.Editor.Test {
 
-    public class MortonTest {
+	public class MortonTest {
 
     	[Test]
     	public void EditorTest() {

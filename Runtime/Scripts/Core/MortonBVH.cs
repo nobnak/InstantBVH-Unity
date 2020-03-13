@@ -14,15 +14,15 @@ namespace Recon.Core {
         protected List<int> _indices = new List<int>();
         protected List<int> _ids = new List<int>();
 
-        public override BaseBVH<Value> Clear() {
-            base.Clear();
+        public override BaseBVH<Value> ClearTree() {
+            base.ClearTree();
             _indices.Clear();
             _ids.Clear();
             return this;
         }
 
-        public override BaseBVH<Value> Update() {
-            Clear ();
+        public override BaseBVH<Value> UpdateTree() {
+            ClearTree ();
 
             var galaxy = volumes.Select (v => v.Bounds.Center).Encapsulate ();
             var min = galaxy.min;

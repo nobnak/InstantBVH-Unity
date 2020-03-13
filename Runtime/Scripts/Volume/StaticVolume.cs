@@ -3,7 +3,7 @@ using System.Collections;
 using Recon.BoundingVolumes;
 using Recon.Extension;
 
-namespace Recon.VisibleArea {
+namespace Recon.VolumeSys {
 
 	[ExecuteInEditMode]
     public class StaticVolume : Volume {

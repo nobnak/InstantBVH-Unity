@@ -1,9 +1,10 @@
-﻿using nobnak.Gist.Pooling;
+using nobnak.Gist.Pooling;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using Recon.TreapSys;
 
-namespace Recon.Treap {
+namespace Recon.Editor.Test {
 
     public class TreapEditorTest {
     	[Test]

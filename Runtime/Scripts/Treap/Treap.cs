@@ -1,10 +1,10 @@
-﻿using nobnak.Gist.Pooling;
+using nobnak.Gist.Pooling;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Recon.Treap {
+namespace Recon.TreapSys {
 
-    public class Treap<Value> {
+	public class Treap<Value> {
         public ulong key;
         public float pri;
 

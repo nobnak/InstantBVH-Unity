@@ -1,17 +1,13 @@
-using UnityEngine;
-using System.Collections;
-using nobnak.Gist;
-using System.Collections.Generic;
-using Recon.SpacePartition;
-using Recon.VisibleArea;
-using Recon.BoundingVolumes.Behaviour;
-using Recon.BoundingVolumes;
-using System.Linq;
-using nobnak.Gist.Intersection;
 using nobnak.Gist.Extensions.ComponentExt;
+using nobnak.Gist.Intersection;
+using Recon.BoundingVolumes;
+using Recon.VolumeSys;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-namespace Recon {
-    [ExecuteInEditMode]
+namespace Recon.BehaviourSys {
+	[ExecuteInEditMode]
     public class Vision : MonoBehaviour, IConvex {
         [Header("Filter")]
         public int mask = -1;

@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using Recon.BoundingVolumes;
 
-namespace Recon.VisibleArea {
+namespace Recon.VolumeSys {
 
     public class MeshVolume : Volume {
         MeshFilter _attachedMFilter;

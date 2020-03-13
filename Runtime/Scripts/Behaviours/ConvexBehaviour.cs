@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using nobnak.Gist.Intersection;
 
-namespace Recon.BoundingVolumes.Behaviour {
+namespace Recon.BehaviourSys {
     public interface IConvex {
         IConvex3Polytope GetConvexPolyhedron();
         bool StartConvex();

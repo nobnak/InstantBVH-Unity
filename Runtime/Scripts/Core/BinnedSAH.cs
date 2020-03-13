@@ -32,9 +32,10 @@ namespace Recon.Core {
             this.aabbPool = aabbPool;
 			this.indices = new List<int>();
 			this.objectBounds = new List<AABB3>();
-			Reset(binCount);
+			ResetBin(binCount);
         }
         public BinnedSAH(IMemoryPool<AABB3> aabbPool) : this(DEFAULT_K, aabbPool) { }
+		public BinnedSAH() : this(AABB3.CreateAABBPool()) { }
 
 		#region interface
 
@@ -44,8 +45,24 @@ namespace Recon.Core {
 			MemoryPoolUtil.Free(bbs, aabbPool);
 		}
 		#endregion
-		#region core
-		public void ClearForBuild() {
+		#region core		
+		public Node<Value> BuildHierachy(
+		IList<AABB3> bounds, IList<int> indices, int offset, int length,
+		IMemoryPool<Node<Value>> alloc) {
+			if (length <= 0)
+				return null;
+
+			int countFromLeft;
+			if (length <= 2 || !Divide(bounds, indices, offset, length, out countFromLeft))
+				return alloc.New().Reset(offset, length);
+
+			var l = BuildHierachy(bounds, indices, offset, countFromLeft, alloc);
+			var r = BuildHierachy(bounds, indices, offset + countFromLeft, length - countFromLeft, alloc);
+			if (l != null ^ r != null)
+				return (l != null) ? l : r;
+			return alloc.New().Reset(offset, length).SetChildren(l, r);
+		}
+		public void ClearBeforeDivide() {
 			if (cleared)
 				return;
 			cleared = true;
@@ -58,8 +75,8 @@ namespace Recon.Core {
 			System.Array.Clear(lefts, 0, lefts.Length);
 			System.Array.Clear(rights, 0, rights.Length);
 		}
-		public bool Build(IList<AABB3> objectBounds, IList<int> indices, int offset, int length, out int countFromLeft) {
-			ClearForBuild();
+		public bool Divide(IList<AABB3> objectBounds, IList<int> indices, int offset, int length, out int countFromLeft) {
+			ClearBeforeDivide();
 			cleared = false;
 
 			var world = aabbPool.New();
@@ -128,7 +145,7 @@ namespace Recon.Core {
 
 			return true;
 		}
-		public void Reset(int nextBinCount) {
+		public void ResetBin(int nextBinCount) {
 			if (binCount == nextBinCount)
 				return;
 			var prevBinCount = binCount;
@@ -150,13 +167,14 @@ namespace Recon.Core {
 		}
 		#endregion
 
-		public override BaseBVH<Value> Clear() {
-			base.Clear();
+		#region BaseBVH
+		public override BaseBVH<Value> ClearTree() {
+			base.ClearTree();
 			indices.Clear();
 			return this;
 		}
-		public override BaseBVH<Value> Update() {
-			Clear();
+		public override BaseBVH<Value> UpdateTree() {
+			ClearTree();
 
 			using (new ScopedPlug<List<AABB3>>(objectBounds, obs => MemoryPoolUtil.Free(obs, aabbPool))) {
 				for (var i = 0; i < volumes.Count; i++) {
@@ -171,22 +189,7 @@ namespace Recon.Core {
 
 			return this;
 		}
-		public Node<Value> BuildHierachy(
-			IList<AABB3> bounds, IList<int> indices, int offset, int length,
-			IMemoryPool<Node<Value>> alloc) {
-			if (length <= 0)
-				return null;
-
-			int countFromLeft;
-			if (length <= 2 || !Build(bounds, indices, offset, length, out countFromLeft))
-				return alloc.New().Reset(offset, length);
-
-			var l = BuildHierachy(bounds, indices, offset, countFromLeft, alloc);
-			var r = BuildHierachy(bounds, indices, offset + countFromLeft, length - countFromLeft, alloc);
-			if (l != null ^ r != null)
-				return (l != null) ? l : r;
-			return alloc.New().Reset(offset, length).SetChildren(l, r);
-		}
+		#endregion
 		#endregion
 
 	}

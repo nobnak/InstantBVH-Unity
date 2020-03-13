@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using Recon.BoundingVolumes;
 using nobnak.Gist.Intersection;
 
-namespace Recon.BoundingVolumes.Behaviour {
+namespace Recon.BehaviourSys {
     [RequireComponent(typeof(Camera))]
     public class CameraFrustum : ConvexBuilder {
         public Color color;

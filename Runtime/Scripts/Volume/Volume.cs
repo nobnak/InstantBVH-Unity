@@ -1,16 +1,13 @@
-using UnityEngine;
-using System.Collections;
-using nobnak.Gist.Extensions.AABB;
-using Recon.BoundingVolumes;
-using Recon.BoundingVolumes.Behaviour;
-using nobnak.Gist.Primitive;
 using nobnak.Gist.Extensions.ComponentExt;
+using nobnak.Gist.Primitive;
+using Recon.BehaviourSys;
 using Recon.Core;
+using UnityEngine;
 
-namespace Recon.VisibleArea {
-    
-    #region Definitions
-    [System.Serializable]
+namespace Recon.VolumeSys {
+
+	#region Definitions
+	[System.Serializable]
     public class VolumeEvent : UnityEngine.Events.UnityEvent<Volume> {}
     #endregion
         
