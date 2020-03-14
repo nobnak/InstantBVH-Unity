@@ -1,17 +1,9 @@
 # SAH-based BVH [1] for Unity
 
-[![Thumbnail](https://img.youtube.com/vi/3nCh7oGWh4g/0.jpg)](https://youtu.be/3nCh7oGWh4g)
-
- - Binned : Fast construction
- - SAH : Better traversal cost
+[![Thumbnail](https://img.youtube.com/vi/bRkFezG-uno/0.jpg)](https://youtu.be/bRkFezG-uno)
 
 ## Usage
-
-### Git Submodule
-###### Use this as a submodule
-```
-git submodule add https://github.com/nobnak/Gist.git Assets/Packages/Gist
-git submodule add https://github.com/nobnak/Recon.git Assets/Packages/Recon
+This module depends on [nobnak/Gist](https://github.com/nobnak/Gist)
 ```
 
 ## References
