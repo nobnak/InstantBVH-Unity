@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
@@ -16,6 +16,13 @@ namespace SimpleBVH.Models {
             this.Max = max;
         }
 
+        #region interface
+        #region object
+        public override string ToString() {
+            return $"[{Min}, {Max}]";
+        }
+        #endregion
+
         public readonly float3 Center => (Min + Max) * 0.5f;
         public readonly float3 Extents => Max - Min;
 
@@ -25,6 +32,15 @@ namespace SimpleBVH.Models {
                 return 2 * math.dot(diff, diff.yzx);
             }
         }
+        #endregion
+
+        #region static
+        public static MinMaxAABB Empty {
+            get => new MinMaxAABB(
+                new float3(float.MaxValue, float.MaxValue, float.MaxValue),
+                new float3(float.MinValue, float.MinValue, float.MinValue));
+        }
+        #endregion
     }
 
     public static class MinMaxAABBExtension {
@@ -46,5 +62,13 @@ namespace SimpleBVH.Models {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Overlaps(this MinMaxAABB a, MinMaxAABB b)
             => math.all(a.Max >= b.Min & a.Min <= b.Max);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool Equals(this MinMaxAABB a, MinMaxAABB b) {
+            var dmin = a.Min - b.Min;
+            var dmax = a.Max - b.Max;
+            var eps = 1e-3f;
+            return math.dot(dmin, dmin) < eps && math.dot(dmax, dmax) < eps;
+        }
     }
 }
