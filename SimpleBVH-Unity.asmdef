@@ -1,0 +1,17 @@
+{
+    "name": "SimpleBVH-Unity",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Mathematics",
+        "Gist2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
