@@ -3,6 +3,7 @@ using SimpleBVH.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace SimpleBVH.Models {
@@ -17,9 +18,9 @@ namespace SimpleBVH.Models {
         public readonly List<int> Indices;
         public readonly IList<T> Objects;
 
-        public readonly IComparer<int> CompareOnXAxis;
-        public readonly IComparer<int> CompareOnYAxis;
-        public readonly IComparer<int> CompareOnZAxis;
+        public readonly FuncComparer<int> CompareOnXAxis;
+        public readonly FuncComparer<int> CompareOnYAxis;
+        public readonly FuncComparer<int> CompareOnZAxis;
 
         public BVH(
             IList<MinMaxAABB> heap, 
@@ -35,9 +36,21 @@ namespace SimpleBVH.Models {
             this.N = n;
             this.N_Inners = nInners;
 
-            this.CompareOnXAxis = new ComparerX<T>(this);
-            this.CompareOnYAxis = new ComparerY<T>(this);
-            this.CompareOnZAxis = new ComparerZ<T>(this);
+            this.CompareOnXAxis = new FuncComparer<int>((i, j) => {
+                var a = Objects[i].Bounds.Center;
+                var b = Objects[j].Bounds.Center;
+                return (int)math.sign(a.x - b.x);
+            });
+            this.CompareOnYAxis = new FuncComparer<int>((i,j) => {
+                var a = Objects[i].Bounds.Center;
+                var b = Objects[j].Bounds.Center;
+                return (int)math.sign(a.y - b.y);
+            });
+            this.CompareOnZAxis = new FuncComparer<int>((i, j) => {
+                var a = Objects[i].Bounds.Center;
+                var b = Objects[j].Bounds.Center;
+                return (int)math.sign(a.z - b.z);
+            });
         }
 
         #region interfac

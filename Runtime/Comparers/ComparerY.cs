@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using SimpleBVH.Interfaces;
 using SimpleBVH.Models;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace SimpleBVH.Comparers {
 
-    public class ComparerY<T> : IComparer<int> where T : IBV {
+    public class ComparerY : BaseComparer<int> {
 
-        public readonly BVH<T> BVH;
-
-        public ComparerY(BVH<T> bvh) {
-            this.BVH = bvh;
+        public ComparerY(System.Func<int, float3> GetPosition) : base(GetPosition) {
         }
 
-        public int Compare(int x, int y) {
-            var a = BVH.Objects[BVH.Indices[x]].Bounds.Center;
-            var b = BVH.Objects[BVH.Indices[y]].Bounds.Center;
+        public override int Compare(int i, int j) {
+            var a = GetPosition(i);
+            var b = GetPosition(j);
             var diff = a.y - b.y;
             return (diff < 0) ? -1 : ((diff > 0) ? 1 : 0);
         }
