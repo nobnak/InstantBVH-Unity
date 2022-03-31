@@ -4,8 +4,10 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
+        "Unity.PerformanceTesting",
         "SimpleBVH-Unity",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "Gist2"
     ],
     "includePlatforms": [
         "Editor"

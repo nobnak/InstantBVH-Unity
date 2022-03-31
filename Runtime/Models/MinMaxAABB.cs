@@ -40,6 +40,9 @@ namespace SimpleBVH.Models {
                 new float3(float.MaxValue, float.MaxValue, float.MaxValue),
                 new float3(float.MinValue, float.MinValue, float.MinValue));
         }
+
+        public static implicit operator MinMaxAABB (float3 center) 
+            => new MinMaxAABB(center, center);
         #endregion
     }
 

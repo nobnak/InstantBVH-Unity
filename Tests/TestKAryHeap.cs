@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-using SimpleBVH;
+using SimpleBVH.Intenals;
 
 public class TestKAryHeap {
 
