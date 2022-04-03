@@ -3,16 +3,19 @@ using NUnit.Framework;
 using SimpleBVH.Models;
 using Unity.PerformanceTesting;
 using SimpleBVH;
+using SimpleBVH.Intenals;
+using System.Linq;
 
-public class TestPerformance
-{
+public class PerfBVH {
     // A Test behaves as an ordinary method
     [Test]
     [Performance]
     public void TestPerformanceSimplePasses() {
-        var n = 100;
+        var n = 10000;
         var s = 1000f;
         var k = 2;
+
+        var markers = BVHExtension.MARKERS.Select(v => new SampleGroup(v, SampleUnit.Microsecond)).ToArray();
 
         var rand = new Unity.Mathematics.Random(31);
         var objes = new List<BV>();
@@ -24,10 +27,8 @@ public class TestPerformance
         }
 
         Measure.Method(() => {
-            var bvh = objes.Build();
-        })
-            .WarmupCount(3)
-            .MeasurementCount(100)
+            var bvh = objes.Build(k);
+        }).ProfilerMarkers(markers)
             .Run();
     }
 }

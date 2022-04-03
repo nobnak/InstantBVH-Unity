@@ -1,13 +1,14 @@
-﻿using SimpleBVH.Interfaces;
+﻿using System.Collections.Generic;
+using SimpleBVH.Interfaces;
 using SimpleBVH.Models;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.Mathematics;
-using UnityEngine;
+using Unity.Profiling;
 
 namespace SimpleBVH.Intenals {
 
     public static class BVHExtensionInternal {
+        public readonly static ProfilerMarker P_EncapsulateBounds = new ProfilerMarker("SimpleBVH.Build.EncapsulateBounds");
+        public readonly static ProfilerMarker P_SortInterval = new ProfilerMarker("SimpleBVH.Build.SortInterval");
 
         /*
          * https://en.wikipedia.org/wiki/D-ary_heap
@@ -29,12 +30,16 @@ namespace SimpleBVH.Intenals {
             if ((end - start) <= 1) return;
 
             var b = MinMaxAABB.Empty;
+            P_EncapsulateBounds.Begin();
             for (var i = start; i < end; i++)
                 b = b.Encapsulate(bvh.Objects[bvh.Indices[i]].Bounds);
+            P_EncapsulateBounds.End();
             bvh.Heap[index] = b;
 
             var comp = FindBestComparer(bvh, b);
+            P_SortInterval.Begin();
             bvh.Indices.Sort(start, end - start, comp);
+            P_SortInterval.End();
 
             var stride = math.max(k_ary, (int)math.ceil((float)(end - start) / k_ary));
             var leftmostChild = k_ary.LeftMostChild(index);

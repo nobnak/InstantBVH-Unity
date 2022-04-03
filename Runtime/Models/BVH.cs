@@ -2,6 +2,7 @@
 using SimpleBVH.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Unity.Mathematics;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace SimpleBVH.Models {
         public readonly IList<MinMaxAABB> Heap;
         public readonly List<int> Indices;
         public readonly IList<T> Objects;
+        public readonly IList<float3> Positions;
 
         public readonly FuncComparer<int> CompareOnXAxis;
         public readonly FuncComparer<int> CompareOnYAxis;
@@ -36,20 +38,22 @@ namespace SimpleBVH.Models {
             this.N = n;
             this.N_Inners = nInners;
 
+            this.Positions = objects.Select(v => v.Bounds.Center).ToList();
+
             this.CompareOnXAxis = new FuncComparer<int>((i, j) => {
-                var a = Objects[i].Bounds.Center;
-                var b = Objects[j].Bounds.Center;
-                return (int)math.sign(a.x - b.x);
+                var a = Positions[i].x;
+                var b = Positions[j].x;
+                return a < b ? -1 : 1;
             });
             this.CompareOnYAxis = new FuncComparer<int>((i,j) => {
-                var a = Objects[i].Bounds.Center;
-                var b = Objects[j].Bounds.Center;
-                return (int)math.sign(a.y - b.y);
+                var a = Positions[i].y;
+                var b = Positions[j].y;
+                return a < b ? -1 : 1;
             });
             this.CompareOnZAxis = new FuncComparer<int>((i, j) => {
-                var a = Objects[i].Bounds.Center;
-                var b = Objects[j].Bounds.Center;
-                return (int)math.sign(a.z - b.z);
+                var a = Positions[i].z;
+                var b = Positions[j].z;
+                return a < b ? -1 : 1;
             });
         }
 
