@@ -1,4 +1,4 @@
-# Instant BVH based on k-ary heap for Unity
+# Instant BVH builder based on k-ary heap for Unity
 
 It builds a BVH (Bounding Volume hierarchy) on complete k-ary heap.
 
