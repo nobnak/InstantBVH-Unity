@@ -1,9 +1,19 @@
-# SAH-based BVH [1] for Unity
+# Instant BVH based on k-ary heap for Unity
 
-[![Thumbnail](https://img.youtube.com/vi/bRkFezG-uno/0.jpg)](https://youtu.be/bRkFezG-uno)
+It builds a BVH (Bounding Volume hierarchy) on complete k-ary heap.
 
-## Usage
-This module depends on [nobnak/Gist](https://github.com/nobnak/Gist)
+```csharp
+using SimpleBVH.Models;
+using SimpleBVH;
+    
+public class BV : IBV {
+  public MinMaxAABB Bounds { get; set; };
+}
+
+var objes = new List<BV>();
+// Add objects into objes
+var bvh = objes.Build(2);
+```
 
 ## References
-1. Wald, I. (2007). On fast Construction of SAH-based Bounding Volume Hierarchies. 2007 IEEE Symposium on Interactive Ray Tracing, 1, 33–40. https://doi.org/10.1109/RT.2007.4342588
+1.Cline, D., Steele, K. & Egbert, P. Lightweight Bounding Volumes for Ray Tracing. J Graph Gpu Game Tools 11, 61–71 (2006).
